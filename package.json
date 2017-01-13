@@ -1,0 +1,29 @@
+{
+  "name": "raven.assure",
+  "version": "0.0.1",
+  "description": "Configurable Raven.Backup CLI and API wrapper for RavenDB.",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/absynce/Raven.Assure.git"
+  },
+  "keywords": [
+    "RavenDB",
+    "backup",
+    "Raven.Backup",
+    "CLI",
+    "API"
+  ],
+  "author": "Jared M. Smith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/absynce/Raven.Assure/issues"
+  },
+  "homepage": "https://github.com/absynce/Raven.Assure#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
