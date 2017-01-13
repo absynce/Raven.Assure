@@ -24,6 +24,10 @@
   },
   "homepage": "https://github.com/absynce/Raven.Assure#readme",
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "gulp-help-doc": "^1.0.7",
+    "gulp-util": "^3.0.8",
+    "lodash": "^4.17.4",
+    "yargs": "^6.6.0"
   }
 }
