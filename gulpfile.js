@@ -19,7 +19,7 @@ gulp.task('help', () => usage(gulp));
 
 /**
  * Build/compile Raven.Assure.
- * Same as `dotnet build /src/Raven.Assure/`.
+ * Same as `dotnet build ./src/Raven.Assure/`.
  *
  * @task {build}
  */
@@ -36,14 +36,14 @@ gulp.task('build', function buildRavenAssure(done) {
 
 /**
  * Run Raven.Assure.Test xUnit tests.
- * Same as `dotnet test src/Raven.Assure.Test/`.
+ * Same as `dotnet test ./test/Raven.Assure.Test/`.
  *
  * @task {test}
  */
 gulp.task('test', function testRavenAssure(done) {
    var testProcess = proc
       .spawn('dotnet', ['test'], {
-         cwd: path.join('src', 'Raven.Assure.Test')
+         cwd: path.join('test', 'Raven.Assure.Test')
       });
 
 
