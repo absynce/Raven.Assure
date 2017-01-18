@@ -48,10 +48,30 @@ gulp.task('test', function testRavenAssure(done) {
          cwd: path.join('test', 'Raven.Assure.Test')
       });
 
-
    testProcess.stdout.on('data', logDatar);
    testProcess.stderr.on('data', logError);
    testProcess.on('close', done);
+});
+
+/**
+ * [WIP] Not working! Bump the version.
+ * @task {bump}
+ */
+gulp.task('bump', function bumpVersion(done) {
+   debugger;
+   try {
+      var bumpProcess = proc.spawn('bump', ['--prompt'], {
+         cwd: path.join('node_modules', 'version-bump-prompt', 'bin')
+      });
+   }
+   catch (error) {
+      console.log('error', error);
+   }
+
+   bumpProcess.stdout.on('data', logDatar);
+   bumpProcess.stderr.on('data', logError);
+   bumpProcess.on('error', logError);
+   bumpProcess.on('close', done);
 });
 
 /**
