@@ -1,0 +1,29 @@
+{
+  "Out": {
+    "From": {
+      "Server": {
+        "Url": "http://localhost:8080/",
+        "Database": "",
+        "Username": "",
+        "Password": "",
+        "APIKey": ""
+      }
+    },
+    "To": "db-name.raven.incremental.bak",
+    "Incremental": false,
+    "RemoveEncryptionKey": false
+  },
+  "In": {
+    "To": {
+      "Server": {
+        "Url": "http://localhost:8080/",
+        "Database": "",
+        "Username": "",
+        "Password": "",
+        "APIKey": ""
+      }
+    },
+    "From": "db-name.raven.incremental.bak",
+    "Incremental": false,
+  }
+}
