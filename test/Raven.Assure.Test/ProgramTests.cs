@@ -24,6 +24,17 @@ namespace Raven.Assure.Test
 
             mockLogger.Verify(logger => logger.Info(It.Is<string>(message => message.Contains("usage"))));
          }
+         [Fact]
+         public void ShouldPrintManualWhenHelpArgumentPassed()
+         {
+            var mockLogger = new Mock<ILogger>();
+
+            var program = new Program(mockLogger.Object);
+
+            program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "help" }));
+
+            mockLogger.Verify(logger => logger.Info(It.Is<string>(message => message.Contains("usage"))));
+         }
       }
 
    }
