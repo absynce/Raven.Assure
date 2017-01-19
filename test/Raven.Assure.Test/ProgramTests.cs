@@ -22,7 +22,7 @@ namespace Raven.Assure.Test
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>()));
 
-            mockLogger.Verify(logger => logger.Info(It.IsAny<string>()));
+            mockLogger.Verify(logger => logger.Info(It.Is<string>(message => message.Contains("usage"))));
          }
       }
 
