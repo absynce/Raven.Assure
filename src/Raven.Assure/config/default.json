@@ -24,6 +24,6 @@
       }
     },
     "From": "db-name.raven.incremental.bak",
-    "Incremental": false,
+    "Incremental": fals
   }
 }

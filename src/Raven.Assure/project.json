@@ -1,13 +1,40 @@
 {
   "version": "1.0.0-*",
   "buildOptions": {
+
+    "copyToOutput": {
+      "include": [
+        "config\\default.json",
+        "config\\test.qa.json"
+      ]
+    },
+    "embed": {
+      "include": [
+        "config\\default.json"
+      ]
+    },
     "emitEntryPoint": true
   },
 
-  "dependencies": {  },
-
+  "dependencies": {
+    "JsonConfig": "1.0.0"
+  },
   "frameworks": {
-    "net46": { },
+    "net46": {},
+  },
+  "packOptions": {
+    "files": {
+      "include": [
+        "config\\default.json",
+        "config\\test.qa.json"
+      ]
+    }
+  },
+  "publishOptions": {
+    "include": [
+      "config\\default.json",
+      "config\\test.qa.json"
+    ]
   },
   "tooling": {
     "defaultNamespace": "Raven.Assure"

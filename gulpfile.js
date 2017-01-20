@@ -2,6 +2,7 @@ const _ = require('lodash/fp');
 const args = require('yargs').argv;
 const fs = require('fs');
 const gulp = require('gulp');
+const gulpDebugger = require('gulp-debug');
 const gutil = require('gulp-util');
 const path = require('path');
 const proc = require('child_process');
@@ -37,12 +38,27 @@ gulp.task('build', function buildRavenAssure(done) {
 });
 
 /**
+ * This is an annoying task because dotnet project.json doesn't support
+ * [cross-project content copying](https://github.com/dotnet/cli/issues/753).
+ */
+gulp.task('copyConfigs', function copyConfigs() {
+   var configPath = path.join('src', 'Raven.Assure', 'bin', 'Debug', 'net46', 'win7-x64', 'config');
+   var configs =  '{default,test.qa}.json';
+
+   return gulp.src(path.join(configPath, configs))
+      .pipe(gulpDebugger({ title: 'from:' }))
+      .pipe(gulp.dest(path.join('test', 'Raven.Assure.Test', 'bin', 'Debug', 'net46', 'win7-x64', 'config')))
+      .pipe(gulpDebugger({ title: 'to:' }))
+      .on('error', logError);
+});
+
+/**
  * Run Raven.Assure.Test xUnit tests.
  * Same as `dotnet test ./test/Raven.Assure.Test/`.
  *
  * @task {test}
  */
-gulp.task('test', function testRavenAssure(done) {
+gulp.task('test', ['copyConfigs'], function testRavenAssure(done) {
    var testProcess = proc
       .spawn('dotnet', ['test'], {
          cwd: path.join('test', 'Raven.Assure.Test')

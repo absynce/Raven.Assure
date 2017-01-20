@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Raven.Assure.Log;
@@ -28,6 +29,28 @@ namespace Raven.Assure
             PrintManual();
             return;
          }
+      }
+
+      public dynamic GetConfigFromArgs(IReadOnlyList<string> args)
+      {
+         if (args.Count < 2)
+         {
+            throw new ArgumentException("Please specify an environment: ");
+         }
+
+         var configArgument = args[1];
+
+         dynamic databaseConfig;
+         try
+         {
+            databaseConfig = JsonConfig.Config.ApplyJsonFromPath($"config/{configArgument}.json", JsonConfig.Config.Default);
+         }
+         catch (FileNotFoundException)
+         {
+            throw new ArgumentException($"Environment '{configArgument}' not recognized.");// Please use one of { string.Join(Environment.NewLine, (Array)JsonConfig.Config.Global.GetType().GetProperties()) }");
+         }
+
+         return databaseConfig;
       }
 
       private void PrintManual()
