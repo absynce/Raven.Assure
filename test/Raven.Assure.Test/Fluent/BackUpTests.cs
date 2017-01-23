@@ -15,13 +15,26 @@ namespace Raven.Assure.Test.Fluent
           [Fact]
           public void ShouldSetDatabaseName()
           {
-             var logger = new Mock<ILogger>();
              var backup = new Raven.Assure.Fluent.BackUp();
 
              const string expectedDatabaseName = "sun.faces";
              var actualBackup = backup.From(expectedDatabaseName);
 
              Assert.Equal(actualBackup.DatabaseName, expectedDatabaseName);
+          }
+       }
+
+       public class At
+       {
+          [Fact]
+          public void ShouldSetServerUrl()
+          {
+             var backup = new Raven.Assure.Fluent.BackUp();
+
+             const string expectedServerUrl = "db.sublime.com";
+             var actualBackup = backup.At(expectedServerUrl);
+
+             Assert.Equal(actualBackup.ServerUrl, expectedServerUrl);            
           }
        }
     }

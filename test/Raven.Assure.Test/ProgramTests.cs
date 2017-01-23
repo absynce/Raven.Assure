@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Moq;
+using Raven.Assure.Fluent;
 using Raven.Assure.Log;
 using Xunit;
 
@@ -17,7 +18,8 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenNoArgumentsPassed()
          {
             var mockLogger = new Mock<ILogger>();
-            var program = new Program(mockLogger.Object);
+            var mockBackUpper = new Mock<IBackUp>();
+            var program = new Program(mockLogger.Object, mockBackUpper.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>()));
 
@@ -27,8 +29,9 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenHelpArgumentPassed()
          {
             var mockLogger = new Mock<ILogger>();
+            var mockBackUpper = new Mock<IBackUp>();
 
-            var program = new Program(mockLogger.Object);
+            var program = new Program(mockLogger.Object, mockBackUpper.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "help" }));
 
@@ -38,7 +41,19 @@ namespace Raven.Assure.Test
          [Fact]
          public void ShouldCallBackupOutWithPassedConfigParams()
          {
-            Assert.True(false, "Need to test this.");
+            var mockLogger = new Mock<ILogger>();
+            var mockBackUpper = new Mock<IBackUp>();
+
+            mockBackUpper
+               .Setup(backup => backup.From(It.IsAny<string>()))
+               .Returns(() => mockBackUpper.Object);
+
+            var program = new Program(mockLogger.Object, mockBackUpper.Object);
+
+            program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "out", "test.qa" }));
+
+            mockBackUpper.Verify(backUpper => backUpper.From("Test"));
+            mockBackUpper.Verify(backUpper => backUpper.At("http://localhost:8080/"));
          }
       }
 
@@ -61,7 +76,8 @@ namespace Raven.Assure.Test
                var args = new List<string>() {"out", _validEnvironment};
 
                var mockLogger = new Mock<ILogger>();
-               var program = new Program(mockLogger.Object);
+               var mockBackUpper = new Mock<IBackUp>();
+               var program = new Program(mockLogger.Object, mockBackUpper.Object);
 
                var actualConfig = program.GetConfigFromArgs(args);
 
@@ -84,7 +100,8 @@ namespace Raven.Assure.Test
                var args = new List<string>() { "out", _invalidEnvironment };
 
                var mockLogger = new Mock<ILogger>();
-               var program = new Program(mockLogger.Object);
+               var mockBackUpper = new Mock<IBackUp>();
+               var program = new Program(mockLogger.Object, mockBackUpper.Object);
 
                try
                {

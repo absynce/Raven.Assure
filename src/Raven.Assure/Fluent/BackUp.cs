@@ -3,6 +3,7 @@
    public class BackUp : IBackUp
    {
       public string DatabaseName { get; private set; }
+      public string ServerUrl { get; private set; }
 
       public IBackUp From(string databaseName)
       {
@@ -17,7 +18,8 @@
 
       public IBackUp At(string url)
       {
-         throw new System.NotImplementedException();
+         this.ServerUrl = url;
+         return this;
       }
 
       public IBackUp Incremental(bool incremental = false)

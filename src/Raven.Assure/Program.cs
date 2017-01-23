@@ -3,23 +3,27 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using JsonConfig;
+using Raven.Assure.Fluent;
 using Raven.Assure.Log;
 
 namespace Raven.Assure
 {
    public class Program : IProgram
    {
-      private ILogger logger;
+      private readonly ILogger logger;
+      private IBackUp backUpper;
 
       public static void Main(string[] args)
       {
-         var program = new Program(new ConsoleLogger());
+         var program = new Program(new ConsoleLogger(), new BackUp());
          program.ParseCommands(args);
       }
 
-      public Program(ILogger logger)
+      public Program(ILogger logger, IBackUp backUpper)
       {
          this.logger = logger;
+         this.backUpper = backUpper;
       }
 
       public void ParseCommands(IReadOnlyList<string> args)
@@ -29,6 +33,41 @@ namespace Raven.Assure
             PrintManual();
             return;
          }
+
+         var command = args[0];
+
+         switch (command)
+         {
+            //case "in":
+            //   var inEnvironment = GetConfigFromArgs(args);
+            //   RunRestore(inEnvironment);
+            //   break;
+            case "out":
+               var outEnvironment = GetConfigFromArgs(args);
+               RunBackup(outEnvironment);
+               break;
+            default:
+               logger.Info($"Command '{command}' not recognized.");
+               PrintManual();
+               break;
+         }
+      }
+
+      private void RunBackup(dynamic outEnvironment)
+      {
+         if (outEnvironment.Out == Config.Default.Out)
+         {
+            logger.Warning("using the default environment Out config (probably not what you want).");
+         }
+
+         backUpper
+            .From(outEnvironment.Out.From.Server.Database)
+            .At(outEnvironment.Out.From.Server.Url);
+      }
+
+      private void RunRestore(object inEnvironment)
+      {
+         throw new NotImplementedException();
       }
 
       public dynamic GetConfigFromArgs(IReadOnlyList<string> args)

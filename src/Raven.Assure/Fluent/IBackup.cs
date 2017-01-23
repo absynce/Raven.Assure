@@ -3,6 +3,7 @@
    public interface IBackUp
    {
       string DatabaseName { get; }
+      string ServerUrl { get; }
       IBackUp From(string databaseName);
       IBackUp To(string path);
       IBackUp At(string url);
