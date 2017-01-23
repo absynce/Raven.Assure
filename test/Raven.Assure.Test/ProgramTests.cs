@@ -50,8 +50,7 @@ namespace Raven.Assure.Test
             [Fact]
             public void ShouldReturnConfigValue()
             {
-               var ravenAssurePath = typeof(Raven.Assure.Program).Assembly.Location;
-               var expectedConfig = JsonConfig.Config.ApplyJsonFromPath($"{ravenAssurePath}/config/{_validEnvironment}.json",
+               var expectedConfig = JsonConfig.Config.ApplyJsonFromPath($"config/{_validEnvironment}.json",
                   JsonConfig.Config.Default);
                var args = new List<string>() {"out", _validEnvironment};
 
