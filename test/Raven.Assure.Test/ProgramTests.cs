@@ -34,6 +34,12 @@ namespace Raven.Assure.Test
 
             mockLogger.Verify(logger => logger.Info(It.Is<string>(message => message.Contains("usage"))));
          }
+
+         [Fact]
+         public void ShouldCallBackupOutWithPassedConfigParams()
+         {
+            Assert.True(false, "Need to test this.");
+         }
       }
 
       public class GetConfigFromArgs
