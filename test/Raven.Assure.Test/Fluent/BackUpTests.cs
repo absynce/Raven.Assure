@@ -62,5 +62,27 @@ namespace Raven.Assure.Test.Fluent
             }
          }
       }
+
+      public class Run
+      {
+         [Fact]
+         public void ShouldCallStartBackupWithSetOptions()
+         {
+            var backup = new BackUp();
+
+            const string databaseName = "sun.faces";
+            const string backupLocation = "sun.faces.incremental.bak";
+            const string serverUrl = "socal://garden-grove.ca";
+
+            backup
+               .From(databaseName)
+               .At(serverUrl)
+               .To(backupLocation);
+
+            var actualResult = backup.Run();
+
+            Assert.True(actualResult, "The backup should run.");
+         }
+      }
    }
 }

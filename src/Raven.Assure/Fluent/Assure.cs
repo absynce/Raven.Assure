@@ -4,7 +4,7 @@ namespace Raven.Assure.Fluent
 {
    public static class Assure
    {
-      public static IBackUp BackUp()
+      public static IBackUp<BackUp> BackUp()
       {
          throw new NotImplementedException("Need to back up.");
       }

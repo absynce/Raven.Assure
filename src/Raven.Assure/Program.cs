@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using JsonConfig;
 using Raven.Assure.Fluent;
 using Raven.Assure.Log;
@@ -12,15 +10,18 @@ namespace Raven.Assure
    public class Program : IProgram
    {
       private readonly ILogger logger;
-      private IBackUp backUpper;
+      private readonly IBackUp<BackUp> backUpper;
 
       public static void Main(string[] args)
       {
-         var program = new Program(new ConsoleLogger(), new BackUp());
+         var logger = new ConsoleLogger();
+         var backUpper = new BackUp()
+            .LogWith(logger);
+         var program = new Program(logger, backUpper);
          program.ParseCommands(args);
       }
 
-      public Program(ILogger logger, IBackUp backUpper)
+      public Program(ILogger logger, IBackUp<BackUp> backUpper)
       {
          this.logger = logger;
          this.backUpper = backUpper;
@@ -88,11 +89,13 @@ namespace Raven.Assure
          dynamic databaseConfig;
          try
          {
-            databaseConfig = JsonConfig.Config.ApplyJsonFromPath($"config/{configArgument}.json", JsonConfig.Config.Default);
+            databaseConfig = JsonConfig.Config
+               .ApplyJsonFromPath($"config/{configArgument}.json", JsonConfig.Config.Default);
          }
          catch (FileNotFoundException)
          {
-            throw new ArgumentException($"Environment '{configArgument}' not recognized.");// Please use one of { string.Join(Environment.NewLine, (Array)JsonConfig.Config.Global.GetType().GetProperties()) }");
+            throw new ArgumentException($"Environment '{configArgument}' not recognized.");
+            // Please use one of { string.Join(Environment.NewLine, (Array)JsonConfig.Config.Global.GetType().GetProperties()) }");
          }
 
          return databaseConfig;
