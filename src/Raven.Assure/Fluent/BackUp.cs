@@ -2,6 +2,7 @@
 {
    public class BackUp : IBackUp
    {
+      public string BackupLocation { get; private set; }
       public string DatabaseName { get; private set; }
       public string ServerUrl { get; private set; }
 
@@ -13,7 +14,8 @@
 
       public IBackUp To(string path)
       {
-         throw new System.NotImplementedException();
+         this.BackupLocation = path;
+         return this;
       }
 
       public IBackUp At(string url)

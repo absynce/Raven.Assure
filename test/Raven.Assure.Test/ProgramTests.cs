@@ -48,12 +48,17 @@ namespace Raven.Assure.Test
                .Setup(backup => backup.From(It.IsAny<string>()))
                .Returns(() => mockBackUpper.Object);
 
+            mockBackUpper
+               .Setup(backup => backup.At(It.IsAny<string>()))
+               .Returns(() => mockBackUpper.Object);
+
             var program = new Program(mockLogger.Object, mockBackUpper.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "out", "test.qa" }));
 
             mockBackUpper.Verify(backUpper => backUpper.From("Test"));
             mockBackUpper.Verify(backUpper => backUpper.At("http://localhost:8080/"));
+            mockBackUpper.Verify(backUpper => backUpper.To("test.raven.incremental.bak"));
          }
       }
 

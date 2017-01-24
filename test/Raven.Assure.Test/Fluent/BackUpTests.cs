@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
+using Raven.Assure.Fluent;
 using Raven.Assure.Log;
 using Xunit;
 
@@ -35,6 +36,20 @@ namespace Raven.Assure.Test.Fluent
              var actualBackup = backup.At(expectedServerUrl);
 
              Assert.Equal(actualBackup.ServerUrl, expectedServerUrl);            
+          }
+       }
+
+       public class To
+       {
+          [Fact]
+          public void ShouldSetToPath()
+          {
+             var backup = new BackUp();
+
+             const string expectedToPath = "test.raven.incremental.bak";
+             var actualBackup = backup.To(expectedToPath);
+
+             Assert.Equal(expectedToPath, actualBackup.BackupLocation);
           }
        }
     }

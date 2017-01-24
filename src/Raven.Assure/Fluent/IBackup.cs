@@ -2,6 +2,7 @@
 {
    public interface IBackUp
    {
+      string BackupLocation { get; }
       string DatabaseName { get; }
       string ServerUrl { get; }
       IBackUp From(string databaseName);

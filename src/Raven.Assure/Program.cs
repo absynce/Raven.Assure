@@ -62,7 +62,8 @@ namespace Raven.Assure
 
          backUpper
             .From(outEnvironment.Out.From.Server.Database)
-            .At(outEnvironment.Out.From.Server.Url);
+            .At(outEnvironment.Out.From.Server.Url)
+            .To(outEnvironment.Out.To);
       }
 
       private void RunRestore(object inEnvironment)
