@@ -5,6 +5,7 @@
       public string BackupLocation { get; private set; }
       public string DatabaseName { get; private set; }
       public string ServerUrl { get; private set; }
+      public bool Incremental { get; private set; }
 
       public IBackUp From(string databaseName)
       {
@@ -24,9 +25,10 @@
          return this;
       }
 
-      public IBackUp Incremental(bool incremental = false)
+      public IBackUp Incrementally(bool incremental = true)
       {
-         throw new System.NotImplementedException();
+         this.Incremental = incremental;
+         return this;
       }
 
       public IBackUp RemoveEncryptionKey(bool removeEncryptionKey = true)

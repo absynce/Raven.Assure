@@ -1,56 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using Raven.Assure.Fluent;
-using Raven.Assure.Log;
+﻿using Raven.Assure.Fluent;
 using Xunit;
 
 namespace Raven.Assure.Test.Fluent
 {
-    public class BackUpTests
-    {
-       public class From
-       {
-          [Fact]
-          public void ShouldSetDatabaseName()
-          {
-             var backup = new Raven.Assure.Fluent.BackUp();
+   public class BackUpTests
+   {
+      public class From
+      {
+         [Fact]
+         public void ShouldSetDatabaseName()
+         {
+            var backup = new Raven.Assure.Fluent.BackUp();
 
-             const string expectedDatabaseName = "sun.faces";
-             var actualBackup = backup.From(expectedDatabaseName);
+            const string expectedDatabaseName = "sun.faces";
+            var actualBackup = backup.From(expectedDatabaseName);
 
-             Assert.Equal(actualBackup.DatabaseName, expectedDatabaseName);
-          }
-       }
+            Assert.Equal(actualBackup.DatabaseName, expectedDatabaseName);
+         }
+      }
 
-       public class At
-       {
-          [Fact]
-          public void ShouldSetServerUrl()
-          {
-             var backup = new Raven.Assure.Fluent.BackUp();
+      public class At
+      {
+         [Fact]
+         public void ShouldSetServerUrl()
+         {
+            var backup = new Raven.Assure.Fluent.BackUp();
 
-             const string expectedServerUrl = "db.sublime.com";
-             var actualBackup = backup.At(expectedServerUrl);
+            const string expectedServerUrl = "db.sublime.com";
+            var actualBackup = backup.At(expectedServerUrl);
 
-             Assert.Equal(actualBackup.ServerUrl, expectedServerUrl);            
-          }
-       }
+            Assert.Equal(actualBackup.ServerUrl, expectedServerUrl);
+         }
+      }
 
-       public class To
-       {
-          [Fact]
-          public void ShouldSetToPath()
-          {
-             var backup = new BackUp();
+      public class To
+      {
+         [Fact]
+         public void ShouldSetToPath()
+         {
+            var backup = new BackUp();
 
-             const string expectedToPath = "test.raven.incremental.bak";
-             var actualBackup = backup.To(expectedToPath);
+            const string expectedToPath = "test.raven.incremental.bak";
+            var actualBackup = backup.To(expectedToPath);
 
-             Assert.Equal(expectedToPath, actualBackup.BackupLocation);
-          }
-       }
-    }
+            Assert.Equal(expectedToPath, actualBackup.BackupLocation);
+         }
+      }
+
+      public class Incremental
+      {
+         public class WhenPassedZeroParams
+         {
+            [Fact]
+            public void ShouldSetIncrementalToTrue()
+            {
+               var backup = new BackUp();
+
+               var actualBackup = backup.Incrementally();
+
+               Assert.Equal(true, actualBackup.Incremental);
+            }
+         }
+      }
+   }
 }

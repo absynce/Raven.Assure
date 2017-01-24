@@ -64,6 +64,11 @@ namespace Raven.Assure
             .From(outEnvironment.Out.From.Server.Database)
             .At(outEnvironment.Out.From.Server.Url)
             .To(outEnvironment.Out.To);
+
+         if (outEnvironment.Out.Incremental)
+         {
+            backUpper.Incrementally();
+         }
       }
 
       private void RunRestore(object inEnvironment)

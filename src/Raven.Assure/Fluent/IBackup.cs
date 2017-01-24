@@ -4,11 +4,12 @@
    {
       string BackupLocation { get; }
       string DatabaseName { get; }
+      bool Incremental { get; }
       string ServerUrl { get; }
       IBackUp From(string databaseName);
       IBackUp To(string path);
       IBackUp At(string url);
-      IBackUp Incremental(bool incremental = true);
+      IBackUp Incrementally(bool incremental = true);
       IBackUp RemoveEncryptionKey(bool removeEncryptionKey = true);
    }
 }
