@@ -16,11 +16,12 @@
     "emitEntryPoint": true
   },
 
-  "dependencies": {
-    "JsonConfig": "1.0.0"
-  },
+   "dependencies": {
+      "JsonConfig": "1.0.0",
+      "RavenDB.Client": "3.0.30155"
+   },
   "frameworks": {
-    "net46": {},
+    "net46": {}
   },
   "packOptions": {
     "files": {

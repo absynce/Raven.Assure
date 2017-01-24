@@ -70,6 +70,8 @@ namespace Raven.Assure
          {
             backUpper.Incrementally();
          }
+
+         backUpper.Run();
       }
 
       private void RunRestore(object inEnvironment)

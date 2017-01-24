@@ -1,4 +1,7 @@
-﻿using Raven.Assure.Fluent;
+﻿using Moq;
+using Raven.Assure.Fluent;
+using Raven.Client;
+using Raven.Client.Connection;
 using Xunit;
 
 namespace Raven.Assure.Test.Fluent
@@ -68,6 +71,12 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldCallStartBackupWithSetOptions()
          {
+            var mockDocumentStore = new Mock<IDocumentStore>();
+            var mockGlobalDbCommands = new Mock<IGlobalAdminDatabaseCommands>();
+
+            mockDocumentStore.Setup(store => store.Initialize());
+            mockDocumentStore.Setup(store => store.DatabaseCommands.GlobalAdmin).Returns(mockGlobalDbCommands.Object);
+
             var backup = new BackUp();
 
             const string databaseName = "sun.faces";
@@ -75,13 +84,25 @@ namespace Raven.Assure.Test.Fluent
             const string serverUrl = "socal://garden-grove.ca";
 
             backup
+               //.UsingDocumentStore(mockDocumentStore.Object)
                .From(databaseName)
                .At(serverUrl)
                .To(backupLocation);
 
-            var actualResult = backup.Run();
+            //var actualResult = backup.Run();
 
-            Assert.True(actualResult, "The backup should run.");
+            //Assert.True(actualResult, "The backup should run.");
+            Assert.True(false, "Not sure how to test this yet. The method of running backups requires in-method instantiation of the store.");
+         }
+
+         [Fact]
+         public void ShouldActuallyBackUpMyTestDb()
+         {
+            var backup = new BackUp()
+               .From("test")
+               .At("http://localhost:8080/")
+               .To("test.bak")
+               .Run();
          }
       }
    }

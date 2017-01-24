@@ -1,5 +1,4 @@
-﻿using System.Resources;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Raven.Assure.Log;
 
 namespace Raven.Assure.Fluent

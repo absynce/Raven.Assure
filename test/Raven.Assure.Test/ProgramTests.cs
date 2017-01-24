@@ -65,6 +65,7 @@ namespace Raven.Assure.Test
             mockBackUpper.Verify(backUpper => backUpper.At("http://localhost:8080/"));
             mockBackUpper.Verify(backUpper => backUpper.To("test.raven.incremental.bak"));
             mockBackUpper.Verify(backUpper => backUpper.Incrementally(true));
+            mockBackUpper.Verify(backUpper => backUpper.Run());
          }
       }
 
