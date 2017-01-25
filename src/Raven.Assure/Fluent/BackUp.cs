@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
@@ -56,6 +57,8 @@ namespace Raven.Assure.Fluent
 
       public bool Run()
       {
+         var backupStartedOn = DateTime.Now;
+
          logger.Info($@"Running smuggle out...
    from {this.ServerUrl}/{this.DatabaseName}
    to {this.BackupLocation}
@@ -77,9 +80,16 @@ namespace Raven.Assure.Fluent
             );
 
             updateBackupStatus(store);
-
-            return true;
          }
+
+         var backupEndedOn = DateTime.Now;
+         var runTime = backupEndedOn - backupStartedOn;
+
+         logger.NewLine();
+         logger.Info("Backup completed!");
+         logger.Info($"Total backup time: {runTime}");
+
+         return true;
       }
 
       public new BackUp LogWith(ILogger logger)
