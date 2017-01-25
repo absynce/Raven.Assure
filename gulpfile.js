@@ -97,7 +97,7 @@ gulp.task('bump', function bumpVersion(done) {
  *
  * TODO: add branch to package output folder name, like with mobile.
  */
-gulp.task('package', function packageRavenAssure(done) {
+gulp.task('package', ['build'], function packageRavenAssure(done) {
   const smugglePackage = getPackageJson();
   var env = args.environment || paths.bin.environment;
   var fullPackagePath = path.join(paths.package, paths.bin.target, `smuggle-${smugglePackage.version}-${env}`);
