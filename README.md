@@ -18,9 +18,7 @@ Copy `configs/default.json` and tweak to your liking.
       "From": "C:\\your\\backup-folder"
     }
 
-<div class="alert alert-warning">
-`Out.To` and `In.From` must be a full file path.
-</div>
+**Warning**: `Out.To` and `In.From` must be a full file path.
 
 (&cross;) `test.qa.raven.bak`
 <br />
