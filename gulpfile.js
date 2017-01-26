@@ -6,17 +6,23 @@ const gulpDebugger = require('gulp-debug');
 const gutil = require('gulp-util');
 const path = require('path');
 const proc = require('child_process');
+const rename = require('gulp-rename');
 const usage = require('gulp-help-doc');
 
 var paths = {
   bin: {
     prefix: 'src/Raven.Assure/bin',
     environment: 'Release',
+    runtimes: [
+      'win7-x64'
+    ],
     target: 'net46',
     files: '**/*'
   },
   package: 'package'
 };
+
+var getPackageJson = () => JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 gulp.task('help', () => usage(gulp));
 
@@ -98,17 +104,39 @@ gulp.task('bump', function bumpVersion(done) {
  *
  * TODO: add branch to package output folder name, like with mobile.
  */
-gulp.task('package', ['build'], function packageRavenAssure(done) {
-  const assurePackage = getPackageJson();
-  var env = args.environment || args.env || paths.bin.environment;
-  var fullPackagePath = path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${env}`);
+gulp.task('package', ['copyRavenAssureExeToAssure']);
+
+const assurePackage = getPackageJson();
+var env = args.environment || args.env || paths.bin.environment;
+var fullPackagePath = path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${env}`);
+
+gulp.task('moveFromBinToPackage', ['build'], function moveFromBinToPackage(done) {
   var fullBinPath = path.join(paths.bin.prefix, env, paths.bin.target, paths.bin.files);
 
   gutil.log('Packaging from:', gutil.colors.cyan(fullBinPath));
   gutil.log('Packaging into:', gutil.colors.cyan(fullPackagePath));
 
-  gulp.src(fullBinPath)
-      .pipe(gulp.dest(fullPackagePath));
+  return gulp
+    .src(fullBinPath)
+    .pipe(gulp.dest(fullPackagePath));
+});
+
+gulp.task('copyRavenAssureExeToAssure', ['moveFromBinToPackage'], function copyRavenAssureExeToAssure() {
+  copyRavenAssureExe(''); // Default top-level Raven.Assure.exe.
+  paths.bin.runtimes.forEach(copyRavenAssureExe);
+
+  function copyRavenAssureExe(runtime) {
+     var copyFrom = path.join(fullPackagePath, runtime, 'Raven.Assure.exe');
+     var copyToDirectory = path.join(fullPackagePath, runtime);
+     var copyToFileName = 'assure.exe';
+
+     gutil.log('Copying from:', gutil.colors.cyan(copyFrom));
+     gutil.log('Copying into:', gutil.colors.cyan(path.join(copyToDirectory, copyToFileName)));
+
+     gulp.src(copyFrom)
+         .pipe(rename(copyToFileName))
+         .pipe(gulp.dest(copyToDirectory));
+   }
 });
 
 // Define reusable loggers.
@@ -118,5 +146,3 @@ var toString = (msg) => msg.toString();
 var removeLineBreaks = (msg) => msg.replace(/(\r\n|\r|\n)/g, '');
 var logDatar = _.flow(toString, removeLineBreaks, gutil.log);
 var logError = _.flow(gutil.colors.red, logDatar);
-
-var getPackageJson = () => JSON.parse(fs.readFileSync('./package.json', 'utf8'));
