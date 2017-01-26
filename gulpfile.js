@@ -47,14 +47,14 @@ gulp.task('build', function buildRavenAssure(done) {
  * This is an annoying task because dotnet project.json doesn't support
  * [cross-project content copying](https://github.com/dotnet/cli/issues/753).
  */
-gulp.task('copyConfigs', function copyConfigs() {
+gulp.task('copyConfigs', ['build'], function copyConfigs() {
    var configPath = path.join('src', 'Raven.Assure', 'bin', 'Debug', 'net46', 'win7-x64', 'config');
    var configs =  '{default,test.qa}.json';
 
    return gulp.src(path.join(configPath, configs))
-      .pipe(gulpDebugger({ title: 'from:' }))
+      .pipe(gulpDebugger({ title: '  from:' }))
       .pipe(gulp.dest(path.join('test', 'Raven.Assure.Test', 'bin', 'Debug', 'net46', 'win7-x64', 'config')))
-      .pipe(gulpDebugger({ title: 'to:' }))
+      .pipe(gulpDebugger({ title: '  into:' }))
       .on('error', logError);
 });
 
