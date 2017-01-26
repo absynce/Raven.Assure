@@ -12,9 +12,6 @@ namespace Raven.Assure.Fluent
 {
    public class BackUp : AssureBase, IBackUp<BackUp>
    {
-      public string BackupLocation { get; private set; }
-      public string DatabaseName { get; private set; }
-      public string ServerUrl { get; private set; }
       public bool Incremental { get; private set; }
 
       public IBackUp<BackUp> From(string databaseName)
@@ -59,7 +56,7 @@ namespace Raven.Assure.Fluent
       {
          var backupStartedOn = DateTime.Now;
 
-         logger.Info($@"Running smuggle out...
+         logger.Info($@"Running assure out...
    from {this.ServerUrl}/{this.DatabaseName}
    to {this.BackupLocation}
    with settings:

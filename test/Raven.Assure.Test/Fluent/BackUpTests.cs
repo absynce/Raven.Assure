@@ -101,7 +101,7 @@ namespace Raven.Assure.Test.Fluent
             var backup = new BackUp()
                .From("test")
                .At("http://localhost:8080/")
-               .To(".\\test2.bak")
+               .To(@"C:\temp\test2.bak")
                .Incrementally()
                .Run();
          }

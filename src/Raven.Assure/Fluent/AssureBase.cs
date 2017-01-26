@@ -2,9 +2,13 @@
 
 namespace Raven.Assure.Fluent
 {
-   public class AssureBase : ISetupAssure<AssureBase>
+   public class AssureBase : IAssureBase, ISetupAssure<AssureBase>
    {
       protected ILogger logger;
+
+      public string BackupLocation { get; protected set; }
+      public string DatabaseName { get; protected set; }
+      public string ServerUrl { get; protected set; }
 
       public AssureBase()
       {

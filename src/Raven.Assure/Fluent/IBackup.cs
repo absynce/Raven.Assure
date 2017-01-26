@@ -1,11 +1,8 @@
 ﻿namespace Raven.Assure.Fluent
 {
-   public interface IBackUp<out T> : IRunAssure, ISetupAssure<T>
+   public interface IBackUp<out T> : IAssureBase, IRunAssure, ISetupAssure<T>
    {
-      string BackupLocation { get; }
-      string DatabaseName { get; }
       bool Incremental { get; }
-      string ServerUrl { get; }
       IBackUp<T> From(string databaseName);
       IBackUp<T> To(string path);
       IBackUp<T> At(string url);
