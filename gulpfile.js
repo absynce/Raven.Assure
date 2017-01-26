@@ -91,16 +91,17 @@ gulp.task('bump', function bumpVersion(done) {
 });
 
 /**
- * Package Raven.Assure CLI into ./package/{target}/smuggle-{version}-{environment}.
+ * Package Raven.Assure CLI into ./package/{target}/assure-{version}-{environment}.
  * @task {package}
  * @arg {environment} The build environment: {Debug|Release(default)}
+ * @arg {env} Alias for environment
  *
  * TODO: add branch to package output folder name, like with mobile.
  */
 gulp.task('package', ['build'], function packageRavenAssure(done) {
-  const smugglePackage = getPackageJson();
-  var env = args.environment || paths.bin.environment;
-  var fullPackagePath = path.join(paths.package, paths.bin.target, `smuggle-${smugglePackage.version}-${env}`);
+  const assurePackage = getPackageJson();
+  var env = args.environment || args.env || paths.bin.environment;
+  var fullPackagePath = path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${env}`);
   var fullBinPath = path.join(paths.bin.prefix, env, paths.bin.target, paths.bin.files);
 
   gutil.log('Packaging from:', gutil.colors.cyan(fullBinPath));
