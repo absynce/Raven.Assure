@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Raven.Abstractions.Data;
 using Raven.Assure.Log;
 using Raven.Client.Document;
@@ -44,6 +45,8 @@ namespace Raven.Assure.Fluent
 
       public bool Run()
       {
+         var restoreStartedOn = DateTime.Now;
+
          logger.Info($@"Running assure in...
    from {this.BackupLocation}
    to {this.ServerUrl}/{this.DatabaseName}
@@ -55,14 +58,23 @@ namespace Raven.Assure.Fluent
             Url = this.ServerUrl
          }.Initialize())
          {
-            store.DatabaseCommands.GlobalAdmin.StartRestore(new DatabaseRestoreRequest() {
+            var restoreOperation = store.DatabaseCommands.GlobalAdmin.StartRestore(new DatabaseRestoreRequest() {
                BackupLocation = this.BackupLocation,
                DatabaseName = this.DatabaseName
             });
 
-            // TODO: Implement status logging.
-            //updateBackupStatus(store);
+            logger.Info("RavenDB provides no status updates on the restore operation...just wait until it completes :-s");
+
+            restoreOperation.WaitForCompletion();
          }
+
+         var restoreEndedOn = DateTime.Now;
+
+         var timeToRestore = restoreEndedOn - restoreStartedOn;
+
+         logger.NewLine();
+         logger.Info($"Restore from {this.BackupLocation} to {this.DatabaseName} completed!");
+         logger.Info($"Total restore time: {timeToRestore}");
 
          return true;
       }
