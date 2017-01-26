@@ -23,7 +23,6 @@
         "APIKey": ""
       }
     },
-    "From": "db-name.raven.incremental.bak",
-    "Incremental": false
+    "From": "db-name.raven.incremental.bak"
   }
 }

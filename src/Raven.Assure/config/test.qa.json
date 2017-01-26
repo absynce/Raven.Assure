@@ -12,13 +12,9 @@
   "In": {
     "To": {
       "Server": {
-        "Url": "http://localhost:8080/",
-        "Database": "",
-        "Username": "",
-        "Password": "",
-        "APIKey": ""
+        "Database": "TestRestored"
       }
     },
-    "From": "test.raven.incremental.bak"
+    "From": "C:\\temp\\test.raven.incremental.bak"
   }
 }

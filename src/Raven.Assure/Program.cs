@@ -4,6 +4,7 @@ using System.IO;
 using JsonConfig;
 using Raven.Assure.Fluent;
 using Raven.Assure.Log;
+using Raven.Client.Linq;
 
 namespace Raven.Assure
 {
@@ -11,20 +12,24 @@ namespace Raven.Assure
    {
       private readonly ILogger logger;
       private readonly IBackUp<BackUp> backUpper;
+      private readonly IRestore<Restore> restorer;
 
       public static void Main(string[] args)
       {
          var logger = new ConsoleLogger();
          var backUpper = new BackUp()
             .LogWith(logger);
-         var program = new Program(logger, backUpper);
+         var restorer = new Restore()
+            .LogWith(logger);
+         var program = new Program(logger, backUpper, restorer);
          program.ParseCommands(args);
       }
 
-      public Program(ILogger logger, IBackUp<BackUp> backUpper)
+      public Program(ILogger logger, IBackUp<BackUp> backUpper, IRestore<Restore> restorer)
       {
          this.logger = logger;
          this.backUpper = backUpper;
+         this.restorer = restorer;
       }
 
       public void ParseCommands(IReadOnlyList<string> args)
@@ -39,10 +44,10 @@ namespace Raven.Assure
 
          switch (command)
          {
-            //case "in":
-            //   var inEnvironment = GetConfigFromArgs(args);
-            //   RunRestore(inEnvironment);
-            //   break;
+            case "in":
+               var inEnvironment = GetConfigFromArgs(args);
+               RunRestore(inEnvironment);
+               break;
             case "out":
                var outEnvironment = GetConfigFromArgs(args);
                RunBackup(outEnvironment);
@@ -74,9 +79,13 @@ namespace Raven.Assure
          backUpper.Run();
       }
 
-      private void RunRestore(object inEnvironment)
+      private void RunRestore(dynamic inEnvironment)
       {
-         throw new NotImplementedException();
+         restorer
+            .From(inEnvironment.In.From)
+            .To(inEnvironment.In.To.Server.Database)
+            .At(inEnvironment.In.To.Server.Url)
+            .Run();
       }
 
       public dynamic GetConfigFromArgs(IReadOnlyList<string> args)
