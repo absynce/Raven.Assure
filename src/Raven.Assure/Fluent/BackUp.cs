@@ -71,7 +71,7 @@ namespace Raven.Assure.Fluent
          {
             store.DatabaseCommands.GlobalAdmin.StartBackup(
                backupLocation: this.BackupLocation,
-               databaseDocument: new DatabaseDocument(),
+               databaseDocument: null, // Gets the settings for specified database stored in the system database.
                incremental: this.Incremental,
                databaseName: this.DatabaseName
             );
