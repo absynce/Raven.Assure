@@ -30,6 +30,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.8",
     "lodash": "^4.17.4",
+    "merge-stream": "^1.0.1",
     "version-bump-prompt": "^3.0.1",
     "yargs": "^6.6.0"
   }

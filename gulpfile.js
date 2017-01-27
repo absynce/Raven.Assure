@@ -4,6 +4,7 @@ const fs = require('fs');
 const gulp = require('gulp');
 const gulpDebugger = require('gulp-debug');
 const gutil = require('gulp-util');
+const merge = require('merge-stream');
 const path = require('path');
 const proc = require('child_process');
 const rename = require('gulp-rename');
@@ -108,34 +109,45 @@ gulp.task('package', ['copyRavenAssureExeToAssure']);
 
 const assurePackage = getPackageJson();
 var env = args.environment || args.env || paths.bin.environment;
-var fullPackagePath = path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${env}`);
+var getRuntimeBinPath = (runtime) => path.join(paths.bin.prefix, env, paths.bin.target, runtime, paths.bin.files);
+var getRuntimePackagePath = (runtime) => path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${runtime}-${env}`);
 
 gulp.task('moveFromBinToPackage', ['build'], function moveFromBinToPackage(done) {
-  var fullBinPath = path.join(paths.bin.prefix, env, paths.bin.target, paths.bin.files);
+  const moveStreams = paths.bin.runtimes.map(moveFromRuntimeBinToPackage);
 
-  gutil.log('Packaging from:', gutil.colors.cyan(fullBinPath));
-  gutil.log('Packaging into:', gutil.colors.cyan(fullPackagePath));
+  return merge(moveStreams); // Returning a list of gulp streams will ensure task finishes.
 
-  return gulp
-    .src(fullBinPath)
-    .pipe(gulp.dest(fullPackagePath));
+  function moveFromRuntimeBinToPackage(runtime) {
+    const fullRuntimeBinPath = getRuntimeBinPath(runtime);
+    const fullRuntimePackagePath = getRuntimePackagePath(runtime);
+
+    gutil.log('Packaging from:', gutil.colors.cyan(fullRuntimeBinPath));
+    gutil.log('Packaging into:', gutil.colors.cyan(fullRuntimePackagePath));
+
+    return gulp
+      .src(fullRuntimeBinPath)
+      .pipe(gulp.dest(fullRuntimePackagePath));
+  }
 });
 
 gulp.task('copyRavenAssureExeToAssure', ['moveFromBinToPackage'], function copyRavenAssureExeToAssure() {
-  copyRavenAssureExe(''); // Default top-level Raven.Assure.exe.
-  paths.bin.runtimes.forEach(copyRavenAssureExe);
+  const copyStreams = paths.bin.runtimes.map(copyRavenAssureExe);
+
+  return merge(copyStreams); // Returning a list of gulp streams will ensure task finishes.
 
   function copyRavenAssureExe(runtime) {
-     var copyFrom = path.join(fullPackagePath, runtime, 'Raven.Assure.exe');
-     var copyToDirectory = path.join(fullPackagePath, runtime);
-     var copyToFileName = 'assure.exe';
+    var fullRuntimePackagePath = getRuntimePackagePath(runtime);
+    var copyFrom = path.join(fullRuntimePackagePath, 'Raven.Assure.exe');
+    var copyToDirectory = fullRuntimePackagePath;
+    var copyToFileName = 'assure.exe';
 
-     gutil.log('Copying from:', gutil.colors.cyan(copyFrom));
-     gutil.log('Copying into:', gutil.colors.cyan(path.join(copyToDirectory, copyToFileName)));
+    gutil.log('Copying from:', gutil.colors.cyan(copyFrom));
+    gutil.log('Copying into:', gutil.colors.cyan(path.join(copyToDirectory, copyToFileName)));
 
-     gulp.src(copyFrom)
-         .pipe(rename(copyToFileName))
-         .pipe(gulp.dest(copyToDirectory));
+    return gulp
+      .src(copyFrom)
+      .pipe(rename(copyToFileName))
+      .pipe(gulp.dest(copyToDirectory));
    }
 });
 
