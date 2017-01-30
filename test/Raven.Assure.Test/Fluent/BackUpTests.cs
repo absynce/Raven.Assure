@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using System.Collections.Generic;
+using System.IO.Abstractions.TestingHelpers;
+using Moq;
 using Raven.Assure.Fluent;
 using Raven.Client;
 using Raven.Client.Connection;
@@ -104,6 +106,37 @@ namespace Raven.Assure.Test.Fluent
                .To(@"C:\temp\test2.bak")
                .Incrementally()
                .Run();
+         }
+      }
+
+      public class removeEncryptionKey
+      {
+         [Fact]
+         public void ShouldRemoveEncryptionKeyFromBaseDatabaseDocument()
+         {
+            var filePath = @"C:\temp\test.qa.bak";
+            var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+            {
+               { $"{filePath}\\some.json", new MockFileData(
+@"
+{
+  ""Id"": null,
+  ""Settings"": {
+    ""Raven/StorageTypeName"": ""Esent""
+  },
+  ""SecuredSettings"": {},
+  ""Disabled"": false
+}"
+                  )},
+               { $"{filePath}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
+            });
+
+            var backUpper = new BackUp()
+               .On(fileSystem);
+
+            backUpper.removeEncryptionKey();
+
+            Assert.True(false, "TODO: Get the document and see if it has the encryption key.");
          }
       }
    }

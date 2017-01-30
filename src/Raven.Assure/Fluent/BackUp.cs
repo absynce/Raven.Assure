@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
@@ -94,6 +95,11 @@ namespace Raven.Assure.Fluent
          return (BackUp) base.LogWith(logger);
       }
 
+      public new BackUp On(IFileSystem fileSystem)
+      {
+         return (BackUp) base.On(fileSystem);
+      }
+
       /// <summary>
       /// 
       /// </summary>
@@ -120,7 +126,7 @@ namespace Raven.Assure.Fluent
             {
                if (messagesSeenSoFar.Add(msg))
                {
-                  LogStatusMessage(msg);
+                  logStatusMessage(msg);
                }
             }
 
@@ -133,12 +139,12 @@ namespace Raven.Assure.Fluent
          {
             if (messagesSeenSoFar.Add(msg))
             {
-               LogStatusMessage(msg);
+               logStatusMessage(msg);
             }
          }
       }
 
-      private void LogStatusMessage(BackupStatus.BackupMessage msg)
+      private void logStatusMessage(BackupStatus.BackupMessage msg)
       {
          switch (msg.Severity)
          {
@@ -150,6 +156,11 @@ namespace Raven.Assure.Fluent
                logger.WriteLineTimeStamped(msg.Timestamp, msg.Message);
                break;
          }
+      }
+
+      public void removeEncryptionKey()
+      {
+         throw new NotImplementedException();
       }
 
       private BackupStatus getBackupStatus(IDocumentStore store)

@@ -1,9 +1,11 @@
-﻿using Raven.Assure.Log;
+﻿using System.IO.Abstractions;
+using Raven.Assure.Log;
 
 namespace Raven.Assure.Fluent
 {
    public class AssureBase : IAssureBase, ISetupAssure<AssureBase>
    {
+      protected IFileSystem fileSystem;
       protected ILogger logger;
 
       public string BackupLocation { get; protected set; }
@@ -18,6 +20,13 @@ namespace Raven.Assure.Fluent
       public AssureBase LogWith(ILogger logger)
       {
          this.logger = logger;
+
+         return this;
+      }
+
+      public AssureBase On(IFileSystem fileSystem)
+      {
+         this.fileSystem = fileSystem;
 
          return this;
       }

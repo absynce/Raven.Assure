@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
 using Raven.Assure.Log;
@@ -82,6 +83,11 @@ namespace Raven.Assure.Fluent
       public new Restore LogWith(ILogger logger)
       {
          return (Restore) base.LogWith(logger);
+      }
+
+      public new Restore On(IFileSystem fileSystem)
+      {
+         return (Restore) base.On(fileSystem);
       }
    }
 }
