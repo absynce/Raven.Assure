@@ -9,7 +9,9 @@
         "APIKey": ""
       }
     },
-    "To": "db-name.raven.incremental.bak",
+    "To": {
+      "FilePath": "C:\\temp\\db-name.raven.incremental.bak"
+    },
     "Incremental": false,
     "RemoveEncryptionKey": false
   },
@@ -23,6 +25,8 @@
         "APIKey": ""
       }
     },
-    "From": "db-name.raven.incremental.bak"
+    "From": {
+      "FilePath": "C:\\temp\\db-name.raven.incremental.bak"
+    }
   }
 }

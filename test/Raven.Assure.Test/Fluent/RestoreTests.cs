@@ -67,7 +67,7 @@ namespace Raven.Assure.Test.Fluent
 
       public class Run
       {
-         [Fact]
+         [Fact(Skip = "Manual testing only. Would need to pass store to allow testability.")]
          public void ShouldActuallyRestoreMyTestDb()
          {
             var restorer = new Restore()

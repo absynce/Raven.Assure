@@ -69,7 +69,7 @@ namespace Raven.Assure
          backUpper
             .From(outEnvironment.Out.From.Server.Database)
             .At(outEnvironment.Out.From.Server.Url)
-            .To(outEnvironment.Out.To);
+            .To(outEnvironment.Out.To.FilePath);
 
          if (outEnvironment.Out.Incremental)
          {
@@ -82,7 +82,7 @@ namespace Raven.Assure
       private void RunRestore(dynamic inEnvironment)
       {
          restorer
-            .From(inEnvironment.In.From)
+            .From(inEnvironment.In.From.FilePath)
             .To(inEnvironment.In.To.Server.Database)
             .At(inEnvironment.In.To.Server.Url)
             .Run();

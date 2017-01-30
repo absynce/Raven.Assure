@@ -5,7 +5,9 @@
         "Database": "Test"
       }
     },
-    "To": "C:\\temp\\test.raven.incremental.bak",
+    "To": {
+      "FilePath": "C:\\temp\\test.raven.incremental.bak"
+    },
     "Incremental": true,
     "RemoveEncryptionKey": false
   },
@@ -15,6 +17,8 @@
         "Database": "TestRestored"
       }
     },
-    "From": "C:\\temp\\test.raven.incremental.bak"
+    "From": {
+      "FilePath": "C:\\temp\\test.raven.incremental.bak"
+    }
   }
 }

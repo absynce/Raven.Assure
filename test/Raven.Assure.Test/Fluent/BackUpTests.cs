@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using Moq;
+using Newtonsoft.Json;
+using Raven.Abstractions.Data;
+using Raven.Abstractions.Extensions;
 using Raven.Assure.Fluent;
 using Raven.Client;
 using Raven.Client.Connection;
+using Raven.Json.Linq;
 using Xunit;
 
 namespace Raven.Assure.Test.Fluent
@@ -70,7 +74,7 @@ namespace Raven.Assure.Test.Fluent
 
       public class Run
       {
-         [Fact]
+         [Fact(Skip = "Don't know how to test this yet.")]
          public void ShouldCallStartBackupWithSetOptions()
          {
             var mockDocumentStore = new Mock<IDocumentStore>();
@@ -114,29 +118,104 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldRemoveEncryptionKeyFromBaseDatabaseDocument()
          {
-            var filePath = @"C:\temp\test.qa.bak";
+            const string baseBackupLocation = @"C:\temp\test.qa.bak";
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
-               { $"{filePath}\\some.json", new MockFileData(
+               { $"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
 @"
 {
-  ""Id"": null,
+  ""Id"": ""Test.QA"",
   ""Settings"": {
+    ""Raven/ActiveBundles"": ""Encryption;DocumentExpiration;Replication;SqlReplication;PeriodicExport;ScriptedIndexResults"",
+    ""Raven/DataDir"": ""~/Test.QA"",
     ""Raven/StorageTypeName"": ""Esent""
   },
-  ""SecuredSettings"": {},
+  ""SecuredSettings"": {
+    ""Raven/Encryption/Key"": ""XQht064yDEPgHCpjPA/sSXWqy/2gD7z5XJ3PCLYfREQ="",
+    ""Raven/Encryption/Algorithm"": ""System.Security.Cryptography.RijndaelManaged, mscorlib"",
+    ""Raven/Encryption/KeyBitsPreference"": ""256"",
+    ""Raven/Encryption/EncryptIndexes"": ""True""
+  },
   ""Disabled"": false
 }"
                   )},
-               { $"{filePath}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
+               { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
             });
 
             var backUpper = new BackUp()
+               .To(baseBackupLocation)
                .On(fileSystem);
 
             backUpper.removeEncryptionKey();
 
-            Assert.True(false, "TODO: Get the document and see if it has the encryption key.");
+            var baseDatabaseDocumentText = fileSystem.File.ReadAllText($"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}");
+            var baseDatabaseDocument = RavenJObject.Parse(baseDatabaseDocumentText).JsonDeserialization<DatabaseDocument>();
+            //Assert.True(false, "TODO: Get the document and see if it has the encryption key.");
+            string encryptionKey;
+
+            baseDatabaseDocument.SecuredSettings.TryGetValue("Raven/Encryption/Key", out encryptionKey);
+            Assert.Null(encryptionKey);
+         }
+
+         public class WhenTheresNoEncryptionKey
+         {
+            [Fact]
+            public void ShouldNotThrowAnException()
+            {
+               const string baseBackupLocation = @"C:\temp\test.qa.bak";
+               var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+               {
+                  {
+                     $"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+                        @"
+{
+  ""Id"": ""Test.QA"",
+  ""Settings"": {
+    ""Raven/ActiveBundles"": ""DocumentExpiration;Replication;SqlReplication;PeriodicExport;ScriptedIndexResults"",
+    ""Raven/DataDir"": ""~/Test.QA"",
+    ""Raven/StorageTypeName"": ""Esent""
+  },
+  ""SecuredSettings"": { },
+  ""Disabled"": false
+}"
+                     )
+                  },
+                  { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
+               });
+
+               var backUpper = new BackUp()
+                  .To(baseBackupLocation)
+                  .On(fileSystem);
+
+               backUpper.removeEncryptionKey();
+
+               var baseDatabaseDocumentText = fileSystem.File
+                  .ReadAllText($"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}");
+
+               var baseDatabaseDocument = RavenJObject
+                  .Parse(baseDatabaseDocumentText)
+                  .JsonDeserialization<DatabaseDocument>();
+
+               Assert.False(baseDatabaseDocument.SecuredSettings.ContainsKey("Raven/Encryption/Key"), "It should not have an encryption key setting.");
+            }
+         }
+
+         public class WhenTheresAnIncrementalBackupSubFolder
+         {
+            [Fact]
+            public void ShouldRemoveEncryptionKeyFromIncrementalBackupDatabaseDocument()
+            {
+               Assert.True(false, "Set up a breaking test.");
+            }
+         }
+
+         public class WhenTheresMultipleIncrementalBackupSubFolders
+         {
+            [Fact]
+            public void ShouldRemoveEncryptionKeyFromLatestIncrementalBackupDatabaseDocument()
+            {
+               Assert.True(false, "Setup file system multiple incremental backup folders and latest with encryption key.");
+            }
          }
       }
    }

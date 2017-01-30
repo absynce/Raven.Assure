@@ -14,6 +14,7 @@ namespace Raven.Assure.Fluent
 
       public AssureBase()
       {
+         this.fileSystem = new FileSystem();
          this.logger = new ConsoleLogger();
       }
 

@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
+using Raven.Abstractions.Extensions;
 using Raven.Assure.Log;
 using Raven.Client;
 using Raven.Client.Connection;
 using Raven.Client.Document;
+using Raven.Imports.Newtonsoft.Json;
+using Raven.Json.Linq;
 
 namespace Raven.Assure.Fluent
 {
@@ -160,7 +164,49 @@ namespace Raven.Assure.Fluent
 
       public void removeEncryptionKey()
       {
-         throw new NotImplementedException();
+         var databaseDocumentPath = findLatestDatabaseDocument(this.BackupLocation);
+         var databaseDocument = loadDatabaseDocument(databaseDocumentPath);
+
+         var databaseDocumentWithoutEncryptionKey = tryRemoveEncryptionKey(databaseDocument);
+
+         saveDatabaseDocument(databaseDocumentWithoutEncryptionKey, databaseDocumentPath);
+      }
+
+      private DatabaseDocument tryRemoveEncryptionKey(DatabaseDocument databaseDocument)
+      {
+         const string encryptionKeySettingKey = "Raven/Encryption/Key";
+         if (!databaseDocument.SecuredSettings.ContainsKey(encryptionKeySettingKey))
+         {
+            return databaseDocument;
+         }
+
+         // Remove encryption key
+         databaseDocument.SecuredSettings[encryptionKeySettingKey] = null;
+
+         return databaseDocument;
+      }
+
+      private DatabaseDocument loadDatabaseDocument(string databaseDocumentPath)
+      {
+         if (!fileSystem.File.Exists(databaseDocumentPath))
+         {
+            return null;
+         }
+
+         var databaseDocumentText = fileSystem.File.ReadAllText(databaseDocumentPath);
+
+         return RavenJObject.Parse(databaseDocumentText).JsonDeserialization<DatabaseDocument>();
+      }
+
+      private string findLatestDatabaseDocument(string backupLocation)
+      {
+         return Path.Combine(backupLocation, Constants.DatabaseDocumentFilename);
+      }
+
+      private void saveDatabaseDocument(DatabaseDocument databaseDocument, string databaseDocumentPath)
+      {
+         var databaseDocumentText = JsonConvert.SerializeObject(databaseDocument);
+         fileSystem.File.WriteAllText(databaseDocumentPath, databaseDocumentText);
       }
 
       private BackupStatus getBackupStatus(IDocumentStore store)
