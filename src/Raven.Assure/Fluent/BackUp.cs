@@ -70,6 +70,7 @@ namespace Raven.Assure.Fluent
    to {this.BackupLocation}
    with settings:
       incrementally: {this.Incremental}
+      remove encryption key: {this.RemoveEncryptionKey}
 ");
 
          using (var store = new DocumentStore()
@@ -178,17 +179,27 @@ namespace Raven.Assure.Fluent
 
          if (databaseDocument == null)
          {
-            logger.Warning($"Database.Document not found at {databaseDocumentPath} " +
-                           $"when trying to remove encryption key...should this explode?");
+            logger.Warning($@"
+Database.Document not found at {databaseDocumentPath} 
+when trying to remove encryption key...should this explode?");
             return this;
          }
 
          var databaseDocumentUpdater = tryRemoveEncryptionKey(databaseDocument);
 
-         if (!databaseDocumentUpdater.Updated) return this;
+         if (!databaseDocumentUpdater.Updated)
+         {
+            logger.Info($@"
+Encryption key not found in 
+   {databaseDocumentPath}
+...nothing to remove.");
+            return this;
+         }
 
          saveDatabaseDocument(databaseDocumentUpdater.DatabaseDocument, databaseDocumentPath);
-         logger.Info($"Removed encryption key from {databaseDocumentPath}.");
+         logger.Info($@"
+Removed encryption key from 
+   {databaseDocumentPath}");
 
          return this;
       }
