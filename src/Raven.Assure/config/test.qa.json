@@ -9,7 +9,7 @@
       "FilePath": "C:\\temp\\test.raven.incremental.bak"
     },
     "Incremental": true,
-    "RemoveEncryptionKey": false
+    "RemoveEncryptionKey": true
   },
   "In": {
     "To": {

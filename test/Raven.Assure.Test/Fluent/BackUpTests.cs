@@ -72,6 +72,21 @@ namespace Raven.Assure.Test.Fluent
          }
       }
 
+      public class WithoutEncryptionKey
+      {
+         public class WhenPassedZeroParams
+         {
+            [Fact]
+            public void ShouldSetRemoveEncryptionKey()
+            {
+               var backUpper = new BackUp()
+                  .WithoutEncryptionKey();
+
+               Assert.True(backUpper.RemoveEncryptionKey, "When .WithoutEncryptionKey not passed a param, RemoveEncryptionKey should be true.");
+            }
+         }
+      }
+
       public class Run
       {
          [Fact(Skip = "Don't know how to test this yet.")]
@@ -109,11 +124,12 @@ namespace Raven.Assure.Test.Fluent
                .At("http://localhost:8080/")
                .To(@"C:\temp\test2.bak")
                .Incrementally()
+               .WithoutEncryptionKey()
                .Run();
          }
       }
 
-      public class removeEncryptionKey
+      public class TryRemoveEncryptionKey
       {
          [Fact]
          public void ShouldRemoveEncryptionKeyFromBaseDatabaseDocument()

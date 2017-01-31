@@ -19,6 +19,7 @@ namespace Raven.Assure.Fluent
    public class BackUp : AssureBase, IBackUp<BackUp>
    {
       public bool Incremental { get; private set; }
+      public bool RemoveEncryptionKey { get; private set; }
 
       public IBackUp<BackUp> From(string databaseName)
       {
@@ -48,9 +49,11 @@ namespace Raven.Assure.Fluent
          return this;
       }
 
-      public IBackUp<BackUp> RemoveEncryptionKey(bool removeEncryptionKey = true)
+      public IBackUp<BackUp> WithoutEncryptionKey(bool removeEncryptionKey = true)
       {
-         throw new System.NotImplementedException();
+         this.RemoveEncryptionKey = removeEncryptionKey;
+
+         return this;
       }
 
       public Task<bool> RunAsync()
@@ -83,6 +86,11 @@ namespace Raven.Assure.Fluent
             );
 
             updateBackupStatus(store);
+         }
+
+         if (this.RemoveEncryptionKey)
+         {
+            TryRemoveEncryptionKey();
          }
 
          var backupEndedOn = DateTime.Now;
@@ -163,7 +171,7 @@ namespace Raven.Assure.Fluent
          }
       }
 
-      public void TryRemoveEncryptionKey()
+      public IBackUp<BackUp> TryRemoveEncryptionKey()
       {
          var databaseDocumentPath = findLatestDatabaseDocument(this.BackupLocation);
          var databaseDocument = loadDatabaseDocument(databaseDocumentPath);
@@ -172,15 +180,17 @@ namespace Raven.Assure.Fluent
          {
             logger.Warning($"Database.Document not found at {databaseDocumentPath} " +
                            $"when trying to remove encryption key...should this explode?");
-            return;
+            return this;
          }
 
          var databaseDocumentUpdater = tryRemoveEncryptionKey(databaseDocument);
 
-         if (!databaseDocumentUpdater.Updated) return;
+         if (!databaseDocumentUpdater.Updated) return this;
 
          saveDatabaseDocument(databaseDocumentUpdater.DatabaseDocument, databaseDocumentPath);
          logger.Info($"Removed encryption key from {databaseDocumentPath}.");
+
+         return this;
       }
 
       private DatabaseDocumentUpdate tryRemoveEncryptionKey(DatabaseDocument databaseDocument)

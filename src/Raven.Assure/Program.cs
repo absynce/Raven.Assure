@@ -69,7 +69,8 @@ namespace Raven.Assure
          backUpper
             .From(outEnvironment.Out.From.Server.Database)
             .At(outEnvironment.Out.From.Server.Url)
-            .To(outEnvironment.Out.To.FilePath);
+            .To(outEnvironment.Out.To.FilePath)
+            .WithoutEncryptionKey(outEnvironment.Out.RemoveEncryptionKey);
 
          if (outEnvironment.Out.Incremental)
          {
