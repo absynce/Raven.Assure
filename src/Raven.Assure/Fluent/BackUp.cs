@@ -12,6 +12,7 @@ using Raven.Client.Connection;
 using Raven.Client.Document;
 using Raven.Imports.Newtonsoft.Json;
 using Raven.Json.Linq;
+using System.Linq;
 
 namespace Raven.Assure.Fluent
 {
@@ -162,28 +163,47 @@ namespace Raven.Assure.Fluent
          }
       }
 
-      public void removeEncryptionKey()
+      public void TryRemoveEncryptionKey()
       {
          var databaseDocumentPath = findLatestDatabaseDocument(this.BackupLocation);
          var databaseDocument = loadDatabaseDocument(databaseDocumentPath);
 
-         var databaseDocumentWithoutEncryptionKey = tryRemoveEncryptionKey(databaseDocument);
+         if (databaseDocument == null)
+         {
+            logger.Warning($"Database.Document not found at {databaseDocumentPath} " +
+                           $"when trying to remove encryption key...should this explode?");
+            return;
+         }
 
-         saveDatabaseDocument(databaseDocumentWithoutEncryptionKey, databaseDocumentPath);
+         var databaseDocumentUpdater = tryRemoveEncryptionKey(databaseDocument);
+
+         if (!databaseDocumentUpdater.Updated) return;
+
+         saveDatabaseDocument(databaseDocumentUpdater.DatabaseDocument, databaseDocumentPath);
+         logger.Info($"Removed encryption key from {databaseDocumentPath}.");
       }
 
-      private DatabaseDocument tryRemoveEncryptionKey(DatabaseDocument databaseDocument)
+      private DatabaseDocumentUpdate tryRemoveEncryptionKey(DatabaseDocument databaseDocument)
       {
          const string encryptionKeySettingKey = "Raven/Encryption/Key";
          if (!databaseDocument.SecuredSettings.ContainsKey(encryptionKeySettingKey))
          {
-            return databaseDocument;
+            return new DatabaseDocumentUpdate
+            {
+               DatabaseDocument = databaseDocument,
+               Updated = false
+            };
          }
 
          // Remove encryption key
          databaseDocument.SecuredSettings[encryptionKeySettingKey] = null;
 
-         return databaseDocument;
+
+         return new DatabaseDocumentUpdate
+         {
+            DatabaseDocument = databaseDocument,
+            Updated = true
+         };
       }
 
       private DatabaseDocument loadDatabaseDocument(string databaseDocumentPath)
@@ -195,12 +215,22 @@ namespace Raven.Assure.Fluent
 
          var databaseDocumentText = fileSystem.File.ReadAllText(databaseDocumentPath);
 
-         return RavenJObject.Parse(databaseDocumentText).JsonDeserialization<DatabaseDocument>();
+         return RavenJObject.Parse(databaseDocumentText).JsonDeserialization<Abstractions.Data.DatabaseDocument>();
       }
 
+      /// <summary>
+      /// </summary>
+      /// <remarks>Adapted from RavenDB@3.0.30155 - Raven.Database.Actions.MaintenanceActions.FindDatabaseDocument.</remarks>
+      /// <param name="backupLocation"></param>
+      /// <returns></returns>
       private string findLatestDatabaseDocument(string backupLocation)
       {
-         return Path.Combine(backupLocation, Constants.DatabaseDocumentFilename);
+         var backupPath = fileSystem.Directory.GetDirectories(backupLocation, "Inc*")
+                           .OrderByDescending(dir => dir)
+                           .Select(dir => Path.Combine(dir, Constants.DatabaseDocumentFilename))
+                           .FirstOrDefault();
+
+         return backupPath ?? Path.Combine(backupLocation, Constants.DatabaseDocumentFilename);
       }
 
       private void saveDatabaseDocument(DatabaseDocument databaseDocument, string databaseDocumentPath)
