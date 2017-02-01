@@ -24,6 +24,7 @@ var paths = {
 };
 
 var getPackageJson = () => JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+var env = args.environment || args.env || paths.bin.environment;
 
 gulp.task('help', () => usage(gulp));
 
@@ -32,10 +33,12 @@ gulp.task('help', () => usage(gulp));
  * Same as `dotnet build ./src/Raven.Assure/`.
  *
  * @task {build}
+ * @arg {environment} The build environment: {Debug|Release(default)}
+ * @arg {env} Alias for environment
  */
 gulp.task('build', function buildRavenAssure(done) {
    var buildProcess = proc
-      .spawn('dotnet', ['build'], {
+      .spawn('dotnet', ['build', '-c', env], {
          cwd: path.join('src', 'Raven.Assure')
       });
 
@@ -108,7 +111,6 @@ gulp.task('bump', function bumpVersion(done) {
 gulp.task('package', ['copyRavenAssureExeToAssure']);
 
 const assurePackage = getPackageJson();
-var env = args.environment || args.env || paths.bin.environment;
 var getRuntimeBinPath = (runtime) => path.join(paths.bin.prefix, env, paths.bin.target, runtime, paths.bin.files);
 var getRuntimePackagePath = (runtime) => path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${runtime}-${env}`);
 
