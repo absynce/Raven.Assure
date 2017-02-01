@@ -9,20 +9,31 @@ Copy `configs/default.json` and tweak to your liking.
 
 #### Backup location
 
-
     "Out": {
-      "To": "C:\\your\\backup-folder"
+      "To": {
+        "FilePath": "C:\\your\\backup-folder"
+      }
     }
 
     "In": {
-      "From": "C:\\your\\backup-folder"
+      "From": {
+        "FilePath": "C:\\your\\backup-folder"
+      }
     }
 
-**Warning**: `Out.To` and `In.From` must be a full file path.
+**Warning**: `Out.To.FilePath` and `In.From.FilePath` must be a full file path.
 
 (&cross;) `test.qa.raven.bak`
 <br />
 (&check;) `C:\\temp\\test.qa.raven.bak`
+
+#### Incremental
+
+    "Out": {
+      "Incremental": true
+    }
+
+Incremental backups require [particular settings](https://ravendb.net/docs/article-page/3.0/csharp/server/administration/backup-and-restore#using-the-raven.backup-utility) in the RavenDB [server configuration](https://ravendb.net/docs/article-page/3.0/csharp/server/configuration/configuration-options).
 
 # CLI (`> assure in/out ...`)
 
