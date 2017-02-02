@@ -41,9 +41,13 @@ Incremental backups require [particular settings](https://ravendb.net/docs/artic
       "RemoveEncryptionKey": true
     }
 
-When this is set, the encryption key setting (`SecuredSettings["Raven/Encryption/Key"]`) in `Database.Document` files in the backup will be set to null.
+When this is set to `true`, the encryption key setting (`SecuredSettings["Raven/Encryption/Key"]`) in `Database.Document` files in the backup will be set to null.
 
-**Restore** will require the encryption key to be added back to the `Database.Document` files. If there are incremental backups, it will need to be added to the latest incremental `Database.Document` file.
+    "SecuredSettings": {
+        "Raven/Encryption/Key": null
+    }
+
+**Restore** (`in`) requires the encryption key to be added back to the `Database.Document` files. If using incremental backups, it must be added to the latest incremental `Database.Document` file.
 
 **To-do**
 - [ ] Add option to specify encryption key when restoring
