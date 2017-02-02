@@ -112,7 +112,7 @@ gulp.task('package', ['copyRavenAssureExeToAssure']);
 
 const assurePackage = getPackageJson();
 var getRuntimeBinPath = (runtime) => path.join(paths.bin.prefix, env, paths.bin.target, runtime, paths.bin.files);
-var getRuntimePackagePath = (runtime) => path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${runtime}-${env}`);
+var getRuntimePackagePath = (runtime) => path.join(paths.package, paths.bin.target, `assure-${assurePackage.version}-${paths.bin.target}-${env}`);
 
 gulp.task('moveFromBinToPackage', ['build'], function moveFromBinToPackage(done) {
   const moveStreams = paths.bin.runtimes.map(moveFromRuntimeBinToPackage);

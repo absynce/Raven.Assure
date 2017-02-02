@@ -16,11 +16,11 @@
     "emitEntryPoint": true
   },
 
-   "dependencies": {
-      "JsonConfig": "1.0.0",
-      "RavenDB.Client": "3.0.30155",
-      "System.IO.Abstractions": "2.0.0.140"
-   },
+  "dependencies": {
+    "JsonConfig": "1.0.0",
+    "RavenDB.Client": "3.0.30155",
+    "System.IO.Abstractions": "2.0.0.140"
+  },
   "frameworks": {
     "net46": {}
   },
