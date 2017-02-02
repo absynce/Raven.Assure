@@ -35,6 +35,19 @@ Copy `configs/default.json` and tweak to your liking.
 
 Incremental backups require [particular settings](https://ravendb.net/docs/article-page/3.0/csharp/server/administration/backup-and-restore#using-the-raven.backup-utility) in the RavenDB [server configuration](https://ravendb.net/docs/article-page/3.0/csharp/server/configuration/configuration-options).
 
+#### RemoveEncryptionKey
+
+    "Out": {
+      "RemoveEncryptionKey": true
+    }
+
+When this is set, the encryption key setting (`SecuredSettings["Raven/Encryption/Key"]`) in `Database.Document` files in the backup will be set to null.
+
+**Restore** will require the encryption key to be added back to the `Database.Document` files. If there are incremental backups, it will need to be added to the latest incremental `Database.Document` file.
+
+**To-do**
+- [ ] Add option to specify encryption key when restoring
+
 # CLI (`> assure in/out ...`)
 
     > assure [out|in] [config-name]
@@ -45,4 +58,5 @@ Incremental backups require [particular settings](https://ravendb.net/docs/artic
 
 # API
 
+**To-do**
 - [ ] Add fluentish API docs
