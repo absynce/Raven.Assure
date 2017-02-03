@@ -1,31 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using Moq;
-using Newtonsoft.Json;
 using Raven.Abstractions.Data;
 using Raven.Abstractions.Extensions;
 using Raven.Assure.BackUp;
-using Raven.Assure.Fluent;
 using Raven.Client;
 using Raven.Client.Connection;
 using Raven.Json.Linq;
 using Xunit;
 
-namespace Raven.Assure.Test.Fluent
+namespace Raven.Assure.Test.BackUp
 {
-   public class BackUpFileSystemTests
+   public class BackUpDatabaseTests
    {
       public class From
       {
          [Fact]
          public void ShouldSetDatabaseName()
          {
-            var backup = new BackUpFileSystem();
+            var backup = new BackUpDatabase();
 
-            const string expectedFileSystemName = "sun.faces";
-            var actualBackup = backup.From(expectedFileSystemName);
+            const string expectedDatabaseName = "sun.faces";
+            var actualBackup = backup.From(expectedDatabaseName);
 
-            Assert.Equal(actualBackup.FileSystemName, expectedFileSystemName);
+            Assert.Equal(actualBackup.DatabaseName, expectedDatabaseName);
          }
       }
 
@@ -34,7 +32,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetServerUrl()
          {
-            var backup = new BackUpFileSystem();
+            var backup = new BackUpDatabase();
 
             const string expectedServerUrl = "db.sublime.com";
             var actualBackup = backup.At(expectedServerUrl);
@@ -48,7 +46,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetToPath()
          {
-            var backup = new BackUpFileSystem();
+            var backup = new BackUpDatabase();
 
             const string expectedToPath = "test.raven.incremental.bak";
             var actualBackup = backup.To(expectedToPath);
@@ -64,7 +62,7 @@ namespace Raven.Assure.Test.Fluent
             [Fact]
             public void ShouldSetIncrementalToTrue()
             {
-               var backup = new BackUpFileSystem();
+               var backup = new BackUpDatabase();
 
                var actualBackup = backup.Incrementally();
 
@@ -80,7 +78,7 @@ namespace Raven.Assure.Test.Fluent
             [Fact]
             public void ShouldSetRemoveEncryptionKey()
             {
-               var backUpper = new BackUpFileSystem()
+               var backUpper = new BackUpDatabase()
                   .WithoutEncryptionKey();
 
                Assert.True(backUpper.RemoveEncryptionKey, "When .WithoutEncryptionKey not passed a param, RemoveEncryptionKey should be true.");
@@ -99,7 +97,7 @@ namespace Raven.Assure.Test.Fluent
             mockDocumentStore.Setup(store => store.Initialize());
             mockDocumentStore.Setup(store => store.DatabaseCommands.GlobalAdmin).Returns(mockGlobalDbCommands.Object);
 
-            var backup = new BackUpFileSystem();
+            var backup = new BackUpDatabase();
 
             const string databaseName = "sun.faces";
             const string backupLocation = "sun.faces.incremental.bak";
@@ -117,14 +115,13 @@ namespace Raven.Assure.Test.Fluent
             Assert.True(false, "Not sure how to test this yet. The method of running backups requires in-method instantiation of the store.");
          }
 
-         [Fact]
-         //[Fact(Skip = "Manual testing only. Would need to pass store to allow testability.")]
-         public void ShouldActuallyBackUpMyTestFileSystem()
+         [Fact(Skip = "Manual testing only. Would need to pass store to allow testability.")]
+         public void ShouldActuallyBackUpMyTestDb()
          {
-            var backup = new BackUpFileSystem()
-               .From("test.files")
+            var backup = new BackUpDatabase()
+               .From("test")
                .At("http://localhost:8080/")
-               .To(@"C:\temp\test.files.raven.incremental.bak")
+               .To(@"C:\temp\test2.bak")
                .Incrementally()
                .WithoutEncryptionKey()
                .Run();
@@ -160,7 +157,7 @@ namespace Raven.Assure.Test.Fluent
                { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
             });
 
-            var backUpper = new BackUpFileSystem()
+            var backUpper = new BackUpDatabase()
                .To(baseBackupLocation)
                .On(fileSystem);
 
@@ -201,7 +198,7 @@ namespace Raven.Assure.Test.Fluent
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var backUpper = new BackUpFileSystem()
+               var backUpper = new BackUpDatabase()
                   .To(baseBackupLocation)
                   .On(fileSystem);
 
@@ -221,7 +218,7 @@ namespace Raven.Assure.Test.Fluent
          public class WhenTheresAnIncrementalBackupSubFolder
          {
             [Fact]
-            public void ShouldRemoveEncryptionKeyFromIncrementalBackUpFileSystemDocument()
+            public void ShouldRemoveEncryptionKeyFromIncrementalBackupDatabaseDocument()
             {
                const string baseBackupLocation = @"C:\temp\test.qa.bak";
                const string incrementalSubFolder = "Inc 2017-01-30 23-14-21";
@@ -266,7 +263,7 @@ namespace Raven.Assure.Test.Fluent
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var backUpper = new BackUpFileSystem()
+               var backUpper = new BackUpDatabase()
                   .To(baseBackupLocation)
                   .On(fileSystem);
 
@@ -284,7 +281,7 @@ namespace Raven.Assure.Test.Fluent
          public class WhenTheresMultipleIncrementalBackupSubFolders
          {
             [Fact]
-            public void ShouldRemoveEncryptionKeyFromLatestIncrementalBackUpFileSystemDocument()
+            public void ShouldRemoveEncryptionKeyFromLatestIncrementalBackupDatabaseDocument()
             {
                const string baseBackupLocation = @"C:\temp\test.qa.bak";
                const string incrementalSubFolder1 = "Inc 2017-01-30 23-14-21";
@@ -348,7 +345,7 @@ namespace Raven.Assure.Test.Fluent
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var backUpper = new BackUpFileSystem()
+               var backUpper = new BackUpDatabase()
                   .To(baseBackupLocation)
                   .On(fileSystem);
 

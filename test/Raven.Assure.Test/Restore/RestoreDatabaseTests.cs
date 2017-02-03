@@ -1,8 +1,7 @@
-﻿using Raven.Assure.Fluent;
-using Raven.Assure.Restore;
+﻿using Raven.Assure.Restore;
 using Xunit;
 
-namespace Raven.Assure.Test.Fluent
+namespace Raven.Assure.Test.Restore
 {
    public class RestoreDatabaseTests
    {
