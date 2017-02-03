@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Moq;
+using Raven.Assure.BackUp;
 using Raven.Assure.Fluent;
 using Raven.Assure.Log;
+using Raven.Assure.Restore;
 using Xunit;
 
 namespace Raven.Assure.Test
@@ -18,8 +20,8 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenNoArgumentsPassed()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUp<BackUp>>();
-            var mockRestorer = new Mock<IRestore<Restore>>();
+            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
             var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>()));
@@ -31,8 +33,8 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenHelpArgumentPassed()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUp<BackUp>>();
-            var mockRestorer = new Mock<IRestore<Restore>>();
+            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
             var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
 
@@ -45,8 +47,8 @@ namespace Raven.Assure.Test
          public void ShouldCallBackupOutWithPassedConfigParams()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUp<BackUp>>();
-            var mockRestorer = new Mock<IRestore<Restore>>();
+            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
             mockBackUpper
                .Setup(backup => backup.From(It.IsAny<string>()))
@@ -84,8 +86,8 @@ namespace Raven.Assure.Test
          public void ShouldCallBackupInWithPassedConfigParams()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUp<BackUp>>();
-            var mockRestorer = new Mock<IRestore<Restore>>();
+            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
             mockRestorer
                .Setup(restore => restore.From(It.IsAny<string>()))
@@ -129,8 +131,8 @@ namespace Raven.Assure.Test
                var args = new List<string>() {"out", _validEnvironment};
 
                var mockLogger = new Mock<ILogger>();
-               var mockBackUpper = new Mock<IBackUp<BackUp>>();
-               var mockRestorer = new Mock<IRestore<Restore>>();
+               var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+               var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
                var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
 
                var actualConfig = program.GetConfigFromArgs(args);
@@ -156,8 +158,8 @@ namespace Raven.Assure.Test
                var args = new List<string>() {"out", _invalidEnvironment};
 
                var mockLogger = new Mock<ILogger>();
-               var mockBackUpper = new Mock<IBackUp<BackUp>>();
-               var mockRestorer = new Mock<IRestore<Restore>>();
+               var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+               var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
                var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
 
                try

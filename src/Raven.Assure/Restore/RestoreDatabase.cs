@@ -2,37 +2,38 @@
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
+using Raven.Assure.Fluent;
 using Raven.Assure.Log;
 using Raven.Client.Document;
 
-namespace Raven.Assure.Fluent
+namespace Raven.Assure.Restore
 {
-   public class Restore : AssureBase, IRestore<Restore>
+   public class RestoreDatabase : AssureDataBase, IRestoreDatabase<RestoreDatabase>
    {
       public string DatabaseLocation { get; private set; }
 
-      public IRestore<Restore> From(string path)
+      public IRestoreDatabase<RestoreDatabase> From(string path)
       {
          this.BackupLocation = path;
 
          return this;
       }
 
-      public IRestore<Restore> To(string databaseName)
+      public IRestoreDatabase<RestoreDatabase> To(string databaseName)
       {
          this.DatabaseName = databaseName;
 
          return this;
       }
 
-      public IRestore<Restore> At(string url)
+      public IRestoreDatabase<RestoreDatabase> At(string url)
       {
          this.ServerUrl = url;
 
          return this;
       }
 
-      public IRestore<Restore> In(string databaseLocation)
+      public IRestoreDatabase<RestoreDatabase> In(string databaseLocation)
       {
          this.DatabaseLocation = databaseLocation;
 
@@ -74,20 +75,20 @@ namespace Raven.Assure.Fluent
          var timeToRestore = restoreEndedOn - restoreStartedOn;
 
          logger.NewLine();
-         logger.Info($"Restore from {this.BackupLocation} to {this.DatabaseName} completed!");
+         logger.Info($"RestoreDatabase from {this.BackupLocation} to {this.DatabaseName} completed!");
          logger.Info($"Total restore time: {timeToRestore}");
 
          return true;
       }
 
-      public new Restore LogWith(ILogger logger)
+      public new RestoreDatabase LogWith(ILogger logger)
       {
-         return (Restore) base.LogWith(logger);
+         return (RestoreDatabase) base.LogWith(logger);
       }
 
-      public new Restore On(IFileSystem fileSystem)
+      public new RestoreDatabase On(IFileSystem fileSystem)
       {
-         return (Restore) base.On(fileSystem);
+         return (RestoreDatabase) base.On(fileSystem);
       }
    }
 }

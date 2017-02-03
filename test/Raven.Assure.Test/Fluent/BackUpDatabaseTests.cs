@@ -4,6 +4,7 @@ using Moq;
 using Newtonsoft.Json;
 using Raven.Abstractions.Data;
 using Raven.Abstractions.Extensions;
+using Raven.Assure.BackUp;
 using Raven.Assure.Fluent;
 using Raven.Client;
 using Raven.Client.Connection;
@@ -12,14 +13,14 @@ using Xunit;
 
 namespace Raven.Assure.Test.Fluent
 {
-   public class BackUpTests
+   public class BackUpDatabaseTests
    {
       public class From
       {
          [Fact]
          public void ShouldSetDatabaseName()
          {
-            var backup = new Raven.Assure.Fluent.BackUp();
+            var backup = new BackUpDatabase();
 
             const string expectedDatabaseName = "sun.faces";
             var actualBackup = backup.From(expectedDatabaseName);
@@ -33,7 +34,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetServerUrl()
          {
-            var backup = new Raven.Assure.Fluent.BackUp();
+            var backup = new BackUpDatabase();
 
             const string expectedServerUrl = "db.sublime.com";
             var actualBackup = backup.At(expectedServerUrl);
@@ -47,7 +48,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetToPath()
          {
-            var backup = new BackUp();
+            var backup = new BackUpDatabase();
 
             const string expectedToPath = "test.raven.incremental.bak";
             var actualBackup = backup.To(expectedToPath);
@@ -63,7 +64,7 @@ namespace Raven.Assure.Test.Fluent
             [Fact]
             public void ShouldSetIncrementalToTrue()
             {
-               var backup = new BackUp();
+               var backup = new BackUpDatabase();
 
                var actualBackup = backup.Incrementally();
 
@@ -79,7 +80,7 @@ namespace Raven.Assure.Test.Fluent
             [Fact]
             public void ShouldSetRemoveEncryptionKey()
             {
-               var backUpper = new BackUp()
+               var backUpper = new BackUpDatabase()
                   .WithoutEncryptionKey();
 
                Assert.True(backUpper.RemoveEncryptionKey, "When .WithoutEncryptionKey not passed a param, RemoveEncryptionKey should be true.");
@@ -98,7 +99,7 @@ namespace Raven.Assure.Test.Fluent
             mockDocumentStore.Setup(store => store.Initialize());
             mockDocumentStore.Setup(store => store.DatabaseCommands.GlobalAdmin).Returns(mockGlobalDbCommands.Object);
 
-            var backup = new BackUp();
+            var backup = new BackUpDatabase();
 
             const string databaseName = "sun.faces";
             const string backupLocation = "sun.faces.incremental.bak";
@@ -119,7 +120,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldActuallyBackUpMyTestDb()
          {
-            var backup = new BackUp()
+            var backup = new BackUpDatabase()
                .From("test")
                .At("http://localhost:8080/")
                .To(@"C:\temp\test2.bak")
@@ -158,7 +159,7 @@ namespace Raven.Assure.Test.Fluent
                { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
             });
 
-            var backUpper = new BackUp()
+            var backUpper = new BackUpDatabase()
                .To(baseBackupLocation)
                .On(fileSystem);
 
@@ -199,7 +200,7 @@ namespace Raven.Assure.Test.Fluent
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var backUpper = new BackUp()
+               var backUpper = new BackUpDatabase()
                   .To(baseBackupLocation)
                   .On(fileSystem);
 
@@ -264,7 +265,7 @@ namespace Raven.Assure.Test.Fluent
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var backUpper = new BackUp()
+               var backUpper = new BackUpDatabase()
                   .To(baseBackupLocation)
                   .On(fileSystem);
 
@@ -346,7 +347,7 @@ namespace Raven.Assure.Test.Fluent
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var backUpper = new BackUp()
+               var backUpper = new BackUpDatabase()
                   .To(baseBackupLocation)
                   .On(fileSystem);
 

@@ -3,7 +3,7 @@ using Raven.Assure.Log;
 
 namespace Raven.Assure.Fluent
 {
-   public class AssureBase : IAssureBase, ISetupAssure<AssureBase>
+   public class AssureDataBase : IAssureDataBase, ISetupAssure<AssureDataBase>
    {
       protected IFileSystem fileSystem;
       protected ILogger logger;
@@ -12,20 +12,20 @@ namespace Raven.Assure.Fluent
       public string DatabaseName { get; protected set; }
       public string ServerUrl { get; protected set; }
 
-      public AssureBase()
+      public AssureDataBase()
       {
          this.fileSystem = new FileSystem();
          this.logger = new ConsoleLogger();
       }
 
-      public AssureBase LogWith(ILogger logger)
+      public AssureDataBase LogWith(ILogger logger)
       {
          this.logger = logger;
 
          return this;
       }
 
-      public AssureBase On(IFileSystem fileSystem)
+      public AssureDataBase On(IFileSystem fileSystem)
       {
          this.fileSystem = fileSystem;
 

@@ -1,16 +1,17 @@
 ﻿using Raven.Assure.Fluent;
+using Raven.Assure.Restore;
 using Xunit;
 
 namespace Raven.Assure.Test.Fluent
 {
-   public class RestoreTests
+   public class RestoreDatabaseTests
    {
       public class From
       {
          [Fact]
          public void ShouldSetBackupLocation()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreDatabase();
 
             const string expectedBackupLocation = "C:\\temp\\good.will";
 
@@ -25,7 +26,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetDatabaseName()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreDatabase();
 
             const string expectedDatabaseName = "good.will";
 
@@ -40,7 +41,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetDatabaseLocation()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreDatabase();
 
             const string expectedDatabaseLocation = @"~\Databases\good.will";
 
@@ -55,7 +56,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetServerUrl()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreDatabase();
 
             const string expectedServerUrl = "http://good-will-hunting.org/";
 
@@ -70,7 +71,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact(Skip = "Manual testing only. Would need to pass store to allow testability.")]
          public void ShouldActuallyRestoreMyTestDb()
          {
-            var restorer = new Restore()
+            var restorer = new RestoreDatabase()
                .From(@"C:\temp\test2.bak")
                .To("test2")
                .At("http://localhost:8080")

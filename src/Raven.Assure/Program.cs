@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using JsonConfig;
+using Raven.Assure.BackUp;
 using Raven.Assure.Fluent;
 using Raven.Assure.Log;
+using Raven.Assure.Restore;
 using Raven.Client.Linq;
 
 namespace Raven.Assure
@@ -11,21 +13,21 @@ namespace Raven.Assure
    public class Program : IProgram
    {
       private readonly ILogger logger;
-      private readonly IBackUp<BackUp> backUpper;
-      private readonly IRestore<Restore> restorer;
+      private readonly IBackUpDatabase<BackUpDatabase> backUpper;
+      private readonly IRestoreDatabase<RestoreDatabase> restorer;
 
       public static void Main(string[] args)
       {
          var logger = new ConsoleLogger();
-         var backUpper = new BackUp()
+         var backUpper = new BackUpDatabase()
             .LogWith(logger);
-         var restorer = new Restore()
+         var restorer = new RestoreDatabase()
             .LogWith(logger);
          var program = new Program(logger, backUpper, restorer);
          program.ParseCommands(args);
       }
 
-      public Program(ILogger logger, IBackUp<BackUp> backUpper, IRestore<Restore> restorer)
+      public Program(ILogger logger, IBackUpDatabase<BackUpDatabase> backUpper, IRestoreDatabase<RestoreDatabase> restorer)
       {
          this.logger = logger;
          this.backUpper = backUpper;
