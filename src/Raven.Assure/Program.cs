@@ -15,6 +15,7 @@ namespace Raven.Assure
       private readonly ILogger logger;
       private readonly IBackUpDatabase<BackUpDatabase> databaseBackUpper;
       private readonly IRestoreDatabase<RestoreDatabase> databaseRestorer;
+      private readonly IBackUpFileSystem<BackUpFileSystem> fileSystemBackUpper;
 
       public static void Main(string[] args)
       {
@@ -23,15 +24,23 @@ namespace Raven.Assure
             .LogWith(logger);
          var databaseRestorer = new RestoreDatabase()
             .LogWith(logger);
-         var program = new Program(logger, databaseBackUpper, databaseRestorer);
+         var fileSystemBackUpper = new BackUpFileSystem()
+            .LogWith(logger);
+         var program = new Program(logger, databaseBackUpper, databaseRestorer, fileSystemBackUpper);
          program.ParseCommands(args);
       }
 
-      public Program(ILogger logger, IBackUpDatabase<BackUpDatabase> databaseBackUpper, IRestoreDatabase<RestoreDatabase> databaseRestorer)
+      public Program(
+         ILogger logger, 
+         IBackUpDatabase<BackUpDatabase> databaseBackUpper,
+         IRestoreDatabase<RestoreDatabase> databaseRestorer,
+         IBackUpFileSystem<BackUpFileSystem> fileSystemBackUpper
+        ) 
       {
          this.logger = logger;
          this.databaseBackUpper = databaseBackUpper;
          this.databaseRestorer = databaseRestorer;
+         this.fileSystemBackUpper = fileSystemBackUpper;
       }
 
       public void ParseCommands(IReadOnlyList<string> args)
