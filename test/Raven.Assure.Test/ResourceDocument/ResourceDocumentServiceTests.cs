@@ -4,7 +4,9 @@ using System.IO.Abstractions.TestingHelpers;
 using Moq;
 using Raven.Abstractions.Data;
 using Raven.Assure.ResourceDocument;
+using Raven.Json.Linq;
 using Xunit;
+using Raven.Abstractions.Extensions;
 
 namespace Raven.Assure.Test.ResourceDocument
 {
@@ -196,6 +198,63 @@ namespace Raven.Assure.Test.ResourceDocument
                      resourceDocumentService.Load($@"{baseBackupLocation}\invalid.document");
 
                   Assert.Null(actualDocument);
+               }
+            }
+         }
+      }
+
+      public class Save
+      {
+         public class WhenGivenAValidDocument
+         {
+            public class AndAValidDirectory
+            {
+               [Fact]
+               public void ShouldOverwriteExistingDocument()
+               {
+                  const string baseBackupLocation = @"C:\raven\backups\westeros";
+                  var baseDocumentPath = $"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}";
+
+                  var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+                  {
+                     {
+                        baseDocumentPath, new MockFileData(
+                           @"
+   {
+     ""Id"": ""Westeros"",
+     ""Settings"": {
+       ""Raven/ActiveBundles"": ""Encryption;DocumentExpiration;Replication;SqlReplication;PeriodicExport;ScriptedIndexResults"",
+       ""Raven/DataDir"": ""~/Westeros"",
+       ""Raven/StorageTypeName"": ""Esent""
+     },
+     ""SecuredSettings"": {
+       ""Raven/Encryption/Key"": null,
+       ""Raven/Encryption/Algorithm"": ""System.Security.Cryptography.RijndaelManaged, mscorlib"",
+       ""Raven/Encryption/KeyBitsPreference"": ""256"",
+       ""Raven/Encryption/EncryptIndexes"": ""True""
+     },
+     ""Disabled"": false
+   }"
+                        )
+                     },
+                     {
+                        $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 })
+                     }
+                  });
+
+                  var resourceDocumentService = new ResourceDocumentService<DatabaseDocument>(fileSystem);
+
+                  var newDocumentToSave = new DatabaseDocument()
+                  {
+                     Id = "Meereen"
+                  };
+
+                  resourceDocumentService.Save(newDocumentToSave, baseDocumentPath);
+
+                  var databaseDocumentText = fileSystem.File.ReadAllText(baseDocumentPath);
+                  var actualSavedDocument = RavenJObject.Parse(databaseDocumentText).JsonDeserialization<DatabaseDocument>();
+
+                  Assert.Equal(newDocumentToSave.Id, actualSavedDocument.Id);
                }
             }
          }

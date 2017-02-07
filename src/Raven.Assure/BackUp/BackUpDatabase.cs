@@ -194,7 +194,7 @@ Encryption key not found in
             return this;
          }
 
-         saveDatabaseDocument(databaseDocumentUpdater.Document, databaseDocumentPath);
+         resourceDocumentService.Save(databaseDocumentUpdater.Document, databaseDocumentPath);
          logger.Info($@"
 Removed encryption key from 
    {databaseDocumentPath}");
@@ -223,14 +223,6 @@ Removed encryption key from
             Document = databaseDocument,
             Updated = true
          };
-      }
-
-
-
-      private void saveDatabaseDocument(DatabaseDocument databaseDocument, string databaseDocumentPath)
-      {
-         var databaseDocumentText = JsonConvert.SerializeObject(databaseDocument);
-         fileSystem.File.WriteAllText(databaseDocumentPath, databaseDocumentText);
       }
 
       private BackupStatus getBackupStatus(IDocumentStore store)

@@ -6,6 +6,7 @@ using Raven.Json.Linq;
 using Raven.Abstractions.Extensions;
 using System.Linq;
 using Raven.Abstractions.FileSystem;
+using Raven.Imports.Newtonsoft.Json;
 
 namespace Raven.Assure.ResourceDocument
 {
@@ -52,9 +53,12 @@ namespace Raven.Assure.ResourceDocument
          return RavenJObject.Parse(databaseDocumentText).JsonDeserialization<TResourceDocument>();
       }
 
-      public TResourceDocument Save(TResourceDocument document)
+      public TResourceDocument Save(TResourceDocument document, string documentPath)
       {
-         throw new System.NotImplementedException();
+         var databaseDocumentText = JsonConvert.SerializeObject(document);
+         fileSystem.File.WriteAllText(documentPath, databaseDocumentText);
+
+         return document;
       }
 
       public ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument document)
