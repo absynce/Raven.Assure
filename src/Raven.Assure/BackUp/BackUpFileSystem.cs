@@ -173,91 +173,35 @@ namespace Raven.Assure.BackUp
 
       public IBackUpFileSystem<BackUpFileSystem> TryRemoveEncryptionKey()
       {
-         throw new NotImplementedException("Not sure how to do this for file system yet.");
-         var databaseDocumentPath = findLatestDatabaseDocument(this.BackupLocation);
-         var databaseDocument = loadDatabaseDocument(databaseDocumentPath);
+         var fileSystemDocumentService = new FileSystemDocumentService(this.fileSystem);
+         var fileSystemDocumentPath = fileSystemDocumentService.FindLatestDocumentPath(this.BackupLocation);
+         var fileSystemDocument = fileSystemDocumentService.Load(fileSystemDocumentPath);
 
-         if (databaseDocument == null)
+         if (fileSystemDocument == null)
          {
             logger.Warning($@"
-Database.Document not found at {databaseDocumentPath} 
+FileSystem.Document not found at {fileSystemDocumentPath} 
 when trying to remove encryption key...should this explode?");
             return this;
          }
 
-         //var databaseDocumentUpdater = tryRemoveEncryptionKey(databaseDocument);
+         var fileSystemDocumentUpdater = fileSystemDocumentService.TryRemoveEncryptionKey(fileSystemDocument);
 
-//         if (!databaseDocumentUpdater.Updated)
-//         {
-//            logger.Info($@"
-//Encryption key not found in 
-//   {databaseDocumentPath}
-//...nothing to remove.");
-//            return this;
-//         }
+         if (!fileSystemDocumentUpdater.Updated)
+         {
+            logger.Info($@"
+Encryption key not found in 
+   {fileSystemDocumentPath}
+...nothing to remove.");
+            return this;
+         }
 
-//         saveDatabaseDocument(databaseDocumentUpdater.Document, databaseDocumentPath);
-//         logger.Info($@"
-//Removed encryption key from 
-//   {databaseDocumentPath}");
+         fileSystemDocumentService.Save(fileSystemDocumentUpdater.Document, fileSystemDocumentPath);
+         logger.Info($@"
+Removed encryption key from 
+   {fileSystemDocumentPath}");
 
          return this;
-      }
-
-      private static ResourceDocumentUpdate<FileSystemDocument> tryRemoveEncryptionKey(FileSystemDocument fileSystemDocument)
-      {
-         const string encryptionKeySettingKey = "Raven/Encryption/Key";
-         if (!fileSystemDocument.SecuredSettings.ContainsKey(encryptionKeySettingKey))
-         {
-            return new ResourceDocumentUpdate<FileSystemDocument>
-            {
-               Document = fileSystemDocument,
-               Updated = false
-            };
-         }
-
-         // Remove encryption key
-         fileSystemDocument.SecuredSettings[encryptionKeySettingKey] = null;
-
-
-         return new ResourceDocumentUpdate<FileSystemDocument>
-         {
-            Document = fileSystemDocument,
-            Updated = true
-         };
-      }
-
-      private DatabaseDocument loadDatabaseDocument(string databaseDocumentPath)
-      {
-         if (!fileSystem.File.Exists(databaseDocumentPath))
-         {
-            return null;
-         }
-
-         var databaseDocumentText = fileSystem.File.ReadAllText(databaseDocumentPath);
-
-         return RavenJObject.Parse(databaseDocumentText).JsonDeserialization<Abstractions.Data.DatabaseDocument>();
-      }
-
-      /// <summary>
-      /// </summary>
-      /// <remarks>Adapted from RavenDB@3.0.30155 - Raven.Database.Actions.MaintenanceActions.FindDatabaseDocument.</remarks>
-      /// <param name="backupLocation"></param>
-      /// <returns></returns>
-      private string findLatestDatabaseDocument(string backupLocation)
-      {
-         var backupPath = fileSystem.Directory.GetDirectories(backupLocation, "Inc*")
-                           .OrderByDescending(dir => dir)
-                           .Select(dir => Path.Combine(dir, Constants.DatabaseDocumentFilename))
-                           .FirstOrDefault();
-
-         return backupPath ?? Path.Combine(backupLocation, Constants.DatabaseDocumentFilename);
-      }
-
-      private void saveDatabaseDocument(DatabaseDocument databaseDocument, string databaseDocumentPath)
-      {
-         var databaseDocumentText = JsonConvert.SerializeObject(databaseDocument);
-         fileSystem.File.WriteAllText(databaseDocumentPath, databaseDocumentText);
       }
 
       private static BackupStatus getBackupStatus(IFilesStore store)

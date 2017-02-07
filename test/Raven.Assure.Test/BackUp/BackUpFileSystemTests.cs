@@ -3,6 +3,7 @@ using System.IO.Abstractions.TestingHelpers;
 using Moq;
 using Raven.Abstractions.Data;
 using Raven.Abstractions.Extensions;
+using Raven.Abstractions.FileSystem;
 using Raven.Assure.BackUp;
 using Raven.Client;
 using Raven.Client.Connection;
@@ -132,12 +133,12 @@ namespace Raven.Assure.Test.BackUp
       public class TryRemoveEncryptionKey
       {
          [Fact]
-         public void ShouldRemoveEncryptionKeyFromBaseDatabaseDocument()
+         public void ShouldRemoveEncryptionKeyFromBaseFileSystemDocument()
          {
             const string baseBackupLocation = @"C:\temp\test.qa.bak";
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
-               { $"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+               { $"{baseBackupLocation}\\{Constants.FilesystemDocumentFilename}", new MockFileData(
 @"
 {
   ""Id"": ""Test.QA"",
@@ -164,12 +165,12 @@ namespace Raven.Assure.Test.BackUp
 
             backUpper.TryRemoveEncryptionKey();
 
-            var baseDatabaseDocumentText = fileSystem.File.ReadAllText($"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}");
-            var baseDatabaseDocument = RavenJObject.Parse(baseDatabaseDocumentText).JsonDeserialization<DatabaseDocument>();
-            //Assert.True(false, "TODO: Get the document and see if it has the encryption key.");
+            var baseFileSystemDocumentText = fileSystem.File.ReadAllText($"{baseBackupLocation}\\{Constants.FilesystemDocumentFilename}");
+            var baseFileSystemDocument = RavenJObject.Parse(baseFileSystemDocumentText).JsonDeserialization<FileSystemDocument>();
+
             string encryptionKey;
 
-            baseDatabaseDocument.SecuredSettings.TryGetValue("Raven/Encryption/Key", out encryptionKey);
+            baseFileSystemDocument.SecuredSettings.TryGetValue("Raven/Encryption/Key", out encryptionKey);
             Assert.Null(encryptionKey);
          }
 
@@ -182,7 +183,7 @@ namespace Raven.Assure.Test.BackUp
                var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
                {
                   {
-                     $"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+                     $"{baseBackupLocation}\\{Constants.FilesystemDocumentFilename}", new MockFileData(
                         @"
 {
   ""Id"": ""Test.QA"",
@@ -205,14 +206,14 @@ namespace Raven.Assure.Test.BackUp
 
                backUpper.TryRemoveEncryptionKey();
 
-               var baseDatabaseDocumentText = fileSystem.File
-                  .ReadAllText($"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}");
+               var baseFileSystemDocumentText = fileSystem.File
+                  .ReadAllText($"{baseBackupLocation}\\{Constants.FilesystemDocumentFilename}");
 
-               var baseDatabaseDocument = RavenJObject
-                  .Parse(baseDatabaseDocumentText)
-                  .JsonDeserialization<DatabaseDocument>();
+               var baseFileSystemDocument = RavenJObject
+                  .Parse(baseFileSystemDocumentText)
+                  .JsonDeserialization<FileSystemDocument>();
 
-               Assert.False(baseDatabaseDocument.SecuredSettings.ContainsKey("Raven/Encryption/Key"), "It should not have an encryption key setting.");
+               Assert.False(baseFileSystemDocument.SecuredSettings.ContainsKey("Raven/Encryption/Key"), "It should not have an encryption key setting.");
             }
          }
 
@@ -225,7 +226,7 @@ namespace Raven.Assure.Test.BackUp
                const string incrementalSubFolder = "Inc 2017-01-30 23-14-21";
                var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
                {
-                  { $"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+                  { $"{baseBackupLocation}\\{Constants.FilesystemDocumentFilename}", new MockFileData(
    @"
    {
      ""Id"": ""Test.QA"",
@@ -243,7 +244,7 @@ namespace Raven.Assure.Test.BackUp
      ""Disabled"": false
    }"
                      )},
-                  { $"{baseBackupLocation}\\{incrementalSubFolder}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+                  { $"{baseBackupLocation}\\{incrementalSubFolder}\\{Constants.FilesystemDocumentFilename}", new MockFileData(
    @"
    {
      ""Id"": ""Test.QA"",
@@ -270,11 +271,11 @@ namespace Raven.Assure.Test.BackUp
 
                backUpper.TryRemoveEncryptionKey();
 
-               var incrementalDatabaseDocumentText = fileSystem.File.ReadAllText($"{baseBackupLocation}\\{incrementalSubFolder}\\{Constants.DatabaseDocumentFilename}");
-               var inrementalDatabaseDocument = RavenJObject.Parse(incrementalDatabaseDocumentText).JsonDeserialization<DatabaseDocument>();
+               var incrementalFileSystemDocumentText = fileSystem.File.ReadAllText($"{baseBackupLocation}\\{incrementalSubFolder}\\{Constants.FilesystemDocumentFilename}");
+               var inrementalFileSystemDocument = RavenJObject.Parse(incrementalFileSystemDocumentText).JsonDeserialization<FileSystemDocument>();
                string encryptionKey;
 
-               inrementalDatabaseDocument.SecuredSettings.TryGetValue("Raven/Encryption/Key", out encryptionKey);
+               inrementalFileSystemDocument.SecuredSettings.TryGetValue("Raven/Encryption/Key", out encryptionKey);
                Assert.Null(encryptionKey);
             }
          }
@@ -289,7 +290,7 @@ namespace Raven.Assure.Test.BackUp
                const string incrementalSubFolder2 = "Inc 2017-01-31 13-27-08";
                var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
                {
-                  { $"{baseBackupLocation}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+                  { $"{baseBackupLocation}\\{Constants.FilesystemDocumentFilename}", new MockFileData(
    @"
    {
      ""Id"": ""Test.QA"",
@@ -307,7 +308,7 @@ namespace Raven.Assure.Test.BackUp
      ""Disabled"": false
    }"
                      )},
-                  { $"{baseBackupLocation}\\{incrementalSubFolder1}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+                  { $"{baseBackupLocation}\\{incrementalSubFolder1}\\{Constants.FilesystemDocumentFilename}", new MockFileData(
    @"
    {
      ""Id"": ""Test.QA"",
@@ -325,7 +326,7 @@ namespace Raven.Assure.Test.BackUp
      ""Disabled"": false
    }"
                      )},
-                  { $"{baseBackupLocation}\\{incrementalSubFolder2}\\{Constants.DatabaseDocumentFilename}", new MockFileData(
+                  { $"{baseBackupLocation}\\{incrementalSubFolder2}\\{Constants.FilesystemDocumentFilename}", new MockFileData(
    @"
    {
      ""Id"": ""Test.QA"",
@@ -352,11 +353,11 @@ namespace Raven.Assure.Test.BackUp
 
                backUpper.TryRemoveEncryptionKey();
 
-               var incrementalDatabaseDocumentText = fileSystem.File.ReadAllText($"{baseBackupLocation}\\{incrementalSubFolder2}\\{Constants.DatabaseDocumentFilename}");
-               var inrementalDatabaseDocument = RavenJObject.Parse(incrementalDatabaseDocumentText).JsonDeserialization<DatabaseDocument>();
+               var incrementalFileSystemDocumentText = fileSystem.File.ReadAllText($"{baseBackupLocation}\\{incrementalSubFolder2}\\{Constants.FilesystemDocumentFilename}");
+               var inrementalFileSystemDocument = RavenJObject.Parse(incrementalFileSystemDocumentText).JsonDeserialization<FileSystemDocument>();
                string encryptionKey;
 
-               inrementalDatabaseDocument.SecuredSettings.TryGetValue("Raven/Encryption/Key", out encryptionKey);
+               inrementalFileSystemDocument.SecuredSettings.TryGetValue("Raven/Encryption/Key", out encryptionKey);
                Assert.Null(encryptionKey);
             }
          }
