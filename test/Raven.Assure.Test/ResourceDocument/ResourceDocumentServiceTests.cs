@@ -10,6 +10,21 @@ using Raven.Abstractions.Extensions;
 
 namespace Raven.Assure.Test.ResourceDocument
 {
+   /// <summary>
+   /// Used to test the base implementations in ResourceDocumentService.
+   /// </summary>
+   public class TestResourceDocumentService<TResourceDocument> : ResourceDocumentService<TResourceDocument>
+   {
+      public TestResourceDocumentService(IFileSystem fileSystem) : base(fileSystem)
+      {
+      }
+
+      public override ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument document)
+      {
+         throw new System.NotImplementedException();
+      }
+   }
+
    public class ResourceDocumentServiceTests
    {
       public class FindLatest
@@ -46,7 +61,7 @@ namespace Raven.Assure.Test.ResourceDocument
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var resourceDocumentService = new ResourceDocumentService<DatabaseDocument>(fileSystem);
+               var resourceDocumentService = new TestResourceDocumentService<DatabaseDocument>(fileSystem);
 
                var actualDocument =
                   resourceDocumentService.FindLatest(baseBackupLocation);
@@ -104,7 +119,7 @@ namespace Raven.Assure.Test.ResourceDocument
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var resourceDocumentService = new ResourceDocumentService<DatabaseDocument>(fileSystem);
+               var resourceDocumentService = new TestResourceDocumentService<DatabaseDocument>(fileSystem);
 
                var actualDocument = resourceDocumentService.FindLatest(baseBackupLocation);
 
@@ -148,7 +163,7 @@ namespace Raven.Assure.Test.ResourceDocument
                   { $"{baseBackupLocation}\\fileOne.export", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
                });
 
-               var resourceDocumentService = new ResourceDocumentService<DatabaseDocument>(fileSystem);
+               var resourceDocumentService = new TestResourceDocumentService<DatabaseDocument>(fileSystem);
 
                var actualDocument =
                   resourceDocumentService.Load($@"{baseBackupLocation}\{Constants.DatabaseDocumentFilename}");
@@ -192,7 +207,7 @@ namespace Raven.Assure.Test.ResourceDocument
                      }
                   });
 
-                  var resourceDocumentService = new ResourceDocumentService<DatabaseDocument>(fileSystem);
+                  var resourceDocumentService = new TestResourceDocumentService<DatabaseDocument>(fileSystem);
 
                   var actualDocument =
                      resourceDocumentService.Load($@"{baseBackupLocation}\invalid.document");
@@ -242,7 +257,7 @@ namespace Raven.Assure.Test.ResourceDocument
                      }
                   });
 
-                  var resourceDocumentService = new ResourceDocumentService<DatabaseDocument>(fileSystem);
+                  var resourceDocumentService = new TestResourceDocumentService<DatabaseDocument>(fileSystem);
 
                   var newDocumentToSave = new DatabaseDocument()
                   {

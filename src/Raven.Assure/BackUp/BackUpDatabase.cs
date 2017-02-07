@@ -171,9 +171,9 @@ namespace Raven.Assure.BackUp
 
       public IBackUpDatabase<BackUpDatabase> TryRemoveEncryptionKey()
       {
-         var resourceDocumentService = new ResourceDocumentService<DatabaseDocument>(this.fileSystem);
-         var databaseDocumentPath = resourceDocumentService.FindLatestDocumentPath(this.BackupLocation);
-         var databaseDocument = resourceDocumentService.Load(databaseDocumentPath);
+         var databaseDocumentService = new DatabaseDocumentService(this.fileSystem);
+         var databaseDocumentPath = databaseDocumentService.FindLatestDocumentPath(this.BackupLocation);
+         var databaseDocument = databaseDocumentService.Load(databaseDocumentPath);
 
          if (databaseDocument == null)
          {
@@ -183,7 +183,7 @@ when trying to remove encryption key...should this explode?");
             return this;
          }
 
-         var databaseDocumentUpdater = tryRemoveEncryptionKey(databaseDocument);
+         var databaseDocumentUpdater = databaseDocumentService.TryRemoveEncryptionKey(databaseDocument);
 
          if (!databaseDocumentUpdater.Updated)
          {
@@ -194,35 +194,12 @@ Encryption key not found in
             return this;
          }
 
-         resourceDocumentService.Save(databaseDocumentUpdater.Document, databaseDocumentPath);
+         databaseDocumentService.Save(databaseDocumentUpdater.Document, databaseDocumentPath);
          logger.Info($@"
 Removed encryption key from 
    {databaseDocumentPath}");
 
          return this;
-      }
-
-      private ResourceDocumentUpdate<DatabaseDocument> tryRemoveEncryptionKey(DatabaseDocument databaseDocument)
-      {
-         const string encryptionKeySettingKey = "Raven/Encryption/Key";
-         if (!databaseDocument.SecuredSettings.ContainsKey(encryptionKeySettingKey))
-         {
-            return new ResourceDocumentUpdate<DatabaseDocument>
-            {
-               Document = databaseDocument,
-               Updated = false
-            };
-         }
-
-         // Remove encryption key
-         databaseDocument.SecuredSettings[encryptionKeySettingKey] = null;
-
-
-         return new ResourceDocumentUpdate<DatabaseDocument>
-         {
-            Document = databaseDocument,
-            Updated = true
-         };
       }
 
       private BackupStatus getBackupStatus(IDocumentStore store)

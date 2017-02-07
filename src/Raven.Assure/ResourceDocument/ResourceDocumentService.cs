@@ -10,7 +10,7 @@ using Raven.Imports.Newtonsoft.Json;
 
 namespace Raven.Assure.ResourceDocument
 {
-   public class ResourceDocumentService<TResourceDocument> : IResourceDocumentService<TResourceDocument>
+   public abstract class ResourceDocumentService<TResourceDocument> : IResourceDocumentService<TResourceDocument>
    {
       private readonly IFileSystem fileSystem;
 
@@ -61,10 +61,7 @@ namespace Raven.Assure.ResourceDocument
          return document;
       }
 
-      public ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument document)
-      {
-         throw new System.NotImplementedException();
-      }
+      public abstract ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument document);
 
       // TODO: Change this to derived service for each document type or some other better pattern.
       private string getResourceDocumentFileName()
