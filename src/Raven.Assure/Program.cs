@@ -13,25 +13,25 @@ namespace Raven.Assure
    public class Program : IProgram
    {
       private readonly ILogger logger;
-      private readonly IBackUpDatabase<BackUpDatabase> backUpper;
-      private readonly IRestoreDatabase<RestoreDatabase> restorer;
+      private readonly IBackUpDatabase<BackUpDatabase> databaseBackUpper;
+      private readonly IRestoreDatabase<RestoreDatabase> databaseRestorer;
 
       public static void Main(string[] args)
       {
          var logger = new ConsoleLogger();
-         var backUpper = new BackUpDatabase()
+         var databaseBackUpper = new BackUpDatabase()
             .LogWith(logger);
-         var restorer = new RestoreDatabase()
+         var databaseRestorer = new RestoreDatabase()
             .LogWith(logger);
-         var program = new Program(logger, backUpper, restorer);
+         var program = new Program(logger, databaseBackUpper, databaseRestorer);
          program.ParseCommands(args);
       }
 
-      public Program(ILogger logger, IBackUpDatabase<BackUpDatabase> backUpper, IRestoreDatabase<RestoreDatabase> restorer)
+      public Program(ILogger logger, IBackUpDatabase<BackUpDatabase> databaseBackUpper, IRestoreDatabase<RestoreDatabase> databaseRestorer)
       {
          this.logger = logger;
-         this.backUpper = backUpper;
-         this.restorer = restorer;
+         this.databaseBackUpper = databaseBackUpper;
+         this.databaseRestorer = databaseRestorer;
       }
 
       public void ParseCommands(IReadOnlyList<string> args)
@@ -68,7 +68,7 @@ namespace Raven.Assure
             logger.Warning("using the default environment Out config (probably not what you want).");
          }
 
-         backUpper
+         databaseBackUpper
             .From(outEnvironment.Out.From.Server.Database)
             .At(outEnvironment.Out.From.Server.Url)
             .To(outEnvironment.Out.To.FilePath)
@@ -76,15 +76,15 @@ namespace Raven.Assure
 
          if (outEnvironment.Out.Incremental)
          {
-            backUpper.Incrementally();
+            databaseBackUpper.Incrementally();
          }
 
-         backUpper.Run();
+         databaseBackUpper.Run();
       }
 
       private void RunRestore(dynamic inEnvironment)
       {
-         restorer
+         databaseRestorer
             .From(inEnvironment.In.From.FilePath)
             .To(inEnvironment.In.To.Server.Database)
             .At(inEnvironment.In.To.Server.Url)

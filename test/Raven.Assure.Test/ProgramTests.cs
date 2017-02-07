@@ -20,9 +20,9 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenNoArgumentsPassed()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
-            var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
+            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
+            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>()));
 
@@ -33,10 +33,10 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenHelpArgumentPassed()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
+            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
-            var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
+            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() {"help"}));
 
@@ -44,71 +44,71 @@ namespace Raven.Assure.Test
          }
 
          [Fact]
-         public void ShouldCallBackupOutWithPassedConfigParams()
+         public void ShouldCallBackupDatabaseOutWithPassedConfigParams()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
+            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
-            mockBackUpper
+            mockDatabaseBackUpper
                .Setup(backup => backup.From(It.IsAny<string>()))
-               .Returns(() => mockBackUpper.Object);
+               .Returns(() => mockDatabaseBackUpper.Object);
 
-            mockBackUpper
+            mockDatabaseBackUpper
                .Setup(backup => backup.At(It.IsAny<string>()))
-               .Returns(() => mockBackUpper.Object);
+               .Returns(() => mockDatabaseBackUpper.Object);
 
-            mockBackUpper
+            mockDatabaseBackUpper
                .Setup(backup => backup.To(It.IsAny<string>()))
-               .Returns(() => mockBackUpper.Object);
+               .Returns(() => mockDatabaseBackUpper.Object);
 
-            mockBackUpper
+            mockDatabaseBackUpper
                .Setup(backup => backup.Incrementally(It.IsAny<bool>()))
-               .Returns(() => mockBackUpper.Object);
+               .Returns(() => mockDatabaseBackUpper.Object);
 
-            mockBackUpper
+            mockDatabaseBackUpper
                .Setup(backup => backup.WithoutEncryptionKey(It.IsAny<bool>()))
-               .Returns(() => mockBackUpper.Object);
+               .Returns(() => mockDatabaseBackUpper.Object);
 
-            var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
+            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() {"out", "test.qa"}));
 
-            mockBackUpper.Verify(backUpper => backUpper.From("Test"));
-            mockBackUpper.Verify(backUpper => backUpper.At("http://localhost:8080/"));
-            mockBackUpper.Verify(backUpper => backUpper.To("C:\\temp\\test.raven.incremental.bak"));
-            mockBackUpper.Verify(backUpper => backUpper.Incrementally(true));
-            mockBackUpper.Verify(backUpper => backUpper.WithoutEncryptionKey(true));
-            mockBackUpper.Verify(backUpper => backUpper.Run());
+            mockDatabaseBackUpper.Verify(backUpper => backUpper.From("Test"));
+            mockDatabaseBackUpper.Verify(backUpper => backUpper.At("http://localhost:8080/"));
+            mockDatabaseBackUpper.Verify(backUpper => backUpper.To("C:\\temp\\test.raven.incremental.bak"));
+            mockDatabaseBackUpper.Verify(backUpper => backUpper.Incrementally(true));
+            mockDatabaseBackUpper.Verify(backUpper => backUpper.WithoutEncryptionKey(true));
+            mockDatabaseBackUpper.Verify(backUpper => backUpper.Run());
          }
 
          [Fact]
-         public void ShouldCallBackupInWithPassedConfigParams()
+         public void ShouldCallBackupFileSystemInWithPassedConfigParams()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-            var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
+            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
-            mockRestorer
+            mockDatabaseRestorer
                .Setup(restore => restore.From(It.IsAny<string>()))
-               .Returns(() => mockRestorer.Object);
+               .Returns(() => mockDatabaseRestorer.Object);
 
-            mockRestorer
+            mockDatabaseRestorer
                .Setup(restore => restore.At(It.IsAny<string>()))
-               .Returns(() => mockRestorer.Object);
+               .Returns(() => mockDatabaseRestorer.Object);
 
-            mockRestorer
+            mockDatabaseRestorer
                .Setup(restore => restore.To(It.IsAny<string>()))
-               .Returns(() => mockRestorer.Object);
+               .Returns(() => mockDatabaseRestorer.Object);
 
-            var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
+            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object);
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "in", "test.qa" }));
 
-            mockRestorer.Verify(restorer => restorer.From(@"C:\temp\test.raven.incremental.bak"));
-            mockRestorer.Verify(restorer => restorer.To("TestRestored"));
-            mockRestorer.Verify(restorer => restorer.At("http://localhost:8080/"));
-            mockRestorer.Verify(restorer => restorer.Run());
+            mockDatabaseRestorer.Verify(restorer => restorer.From(@"C:\temp\test.raven.incremental.bak"));
+            mockDatabaseRestorer.Verify(restorer => restorer.To("TestRestored"));
+            mockDatabaseRestorer.Verify(restorer => restorer.At("http://localhost:8080/"));
+            mockDatabaseRestorer.Verify(restorer => restorer.Run());
          }
       }
 
@@ -131,9 +131,9 @@ namespace Raven.Assure.Test
                var args = new List<string>() {"out", _validEnvironment};
 
                var mockLogger = new Mock<ILogger>();
-               var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-               var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
-               var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
+               var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+               var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
+               var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object);
 
                var actualConfig = program.GetConfigFromArgs(args);
 
@@ -158,9 +158,9 @@ namespace Raven.Assure.Test
                var args = new List<string>() {"out", _invalidEnvironment};
 
                var mockLogger = new Mock<ILogger>();
-               var mockBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-               var mockRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
-               var program = new Program(mockLogger.Object, mockBackUpper.Object, mockRestorer.Object);
+               var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
+               var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
+               var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object);
 
                try
                {
