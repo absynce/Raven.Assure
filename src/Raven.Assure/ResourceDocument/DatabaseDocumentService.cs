@@ -30,5 +30,10 @@ namespace Raven.Assure.ResourceDocument
             Updated = true
          };
       }
+
+      protected override string getResourceDocumentFileName()
+      {
+         return Constants.DatabaseDocumentFilename;
+      }
    }
 }

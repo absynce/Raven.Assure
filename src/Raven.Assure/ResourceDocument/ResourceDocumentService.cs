@@ -63,19 +63,6 @@ namespace Raven.Assure.ResourceDocument
 
       public abstract ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument document);
 
-      // TODO: Change this to derived service for each document type or some other better pattern.
-      private string getResourceDocumentFileName()
-      {
-         if(typeof(TResourceDocument) == typeof(DatabaseDocument))
-         {
-            return Constants.DatabaseDocumentFilename;
-         }
-         if (typeof(TResourceDocument) == typeof(FileSystemDocument))
-         {
-            return Constants.FilesystemDocumentFilename;
-         }
-
-         throw new NotSupportedException($"{typeof(TResourceDocument)} not supported.");
-      }
+      protected abstract string getResourceDocumentFileName();
    }
 }

@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
-using Moq;
 using Raven.Abstractions.Data;
 using Raven.Assure.ResourceDocument;
 using Raven.Json.Linq;
 using Xunit;
 using Raven.Abstractions.Extensions;
+using Raven.Abstractions.FileSystem;
 
 namespace Raven.Assure.Test.ResourceDocument
 {
@@ -22,6 +23,24 @@ namespace Raven.Assure.Test.ResourceDocument
       public override ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument document)
       {
          throw new System.NotImplementedException();
+      }
+
+      /// <summary>
+      /// Implement hacky version here so it can be used for testing.
+      /// </summary>
+      /// <returns></returns>
+      protected override string getResourceDocumentFileName()
+      {
+         if(typeof(TResourceDocument) == typeof(DatabaseDocument))
+         {
+            return Constants.DatabaseDocumentFilename;
+         }
+         if (typeof(TResourceDocument) == typeof(FileSystemDocument))
+         {
+            return Constants.FilesystemDocumentFilename;
+         }
+
+         throw new NotSupportedException($"{typeof(TResourceDocument)} not supported.");
       }
    }
 
