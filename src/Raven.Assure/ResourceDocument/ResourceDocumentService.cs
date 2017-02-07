@@ -13,8 +13,9 @@ namespace Raven.Assure.ResourceDocument
    public abstract class ResourceDocumentService<TResourceDocument> : IResourceDocumentService<TResourceDocument>
    {
       private readonly IFileSystem fileSystem;
+      protected const string encryptionKeySettingKey = "Raven/Encryption/Key";
 
-      public ResourceDocumentService(IFileSystem fileSystem)
+      protected ResourceDocumentService(IFileSystem fileSystem)
       {
          this.fileSystem = fileSystem;
       }
@@ -61,7 +62,15 @@ namespace Raven.Assure.ResourceDocument
          return document;
       }
 
-      public abstract ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument document);
+      /// <summary>
+      /// </summary>
+      /// <remarks>
+      /// Had to make this abstract because Raven doesn't share an interface
+      /// between FileSystemDocument and DatabaseDocument.
+      /// </remarks>
+      /// <param name="fileSystemDocument"></param>
+      /// <returns></returns>
+      public abstract ResourceDocumentUpdate<TResourceDocument> TryRemoveEncryptionKey(TResourceDocument fileSystemDocument);
 
       protected abstract string getResourceDocumentFileName();
    }

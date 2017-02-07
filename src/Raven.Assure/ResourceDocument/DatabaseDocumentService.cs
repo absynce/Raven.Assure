@@ -11,7 +11,6 @@ namespace Raven.Assure.ResourceDocument
 
       public override ResourceDocumentUpdate<DatabaseDocument> TryRemoveEncryptionKey(DatabaseDocument databaseDocument)
       {
-         const string encryptionKeySettingKey = "Raven/Encryption/Key";
          if (!databaseDocument.SecuredSettings.ContainsKey(encryptionKeySettingKey))
          {
             return new ResourceDocumentUpdate<DatabaseDocument>
