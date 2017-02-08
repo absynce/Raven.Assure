@@ -20,9 +20,13 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenNoArgumentsPassed()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
-            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object, Mock.Of<BackUpFileSystem>());
+            var program = new Program(
+               mockLogger.Object,
+               Mock.Of<BackUpDatabase>(),
+               Mock.Of<RestoreDatabase>(),
+               Mock.Of<BackUpFileSystem>(),
+               Mock.Of<RestoreFileSystem>()
+            );
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>()));
 
@@ -33,10 +37,14 @@ namespace Raven.Assure.Test
          public void ShouldPrintManualWhenHelpArgumentPassed()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
-            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object, Mock.Of<BackUpFileSystem>());
+            var program = new Program(
+               mockLogger.Object,
+               Mock.Of<BackUpDatabase>(),
+               Mock.Of<RestoreDatabase>(),
+               Mock.Of<BackUpFileSystem>(),
+               Mock.Of<RestoreFileSystem>()
+            );
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() {"help"}));
 
@@ -46,9 +54,7 @@ namespace Raven.Assure.Test
          [Fact]
          public void ShouldCallBackupDatabaseOutWithPassedConfigParams()
          {
-            var mockLogger = new Mock<ILogger>();
             var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
             mockDatabaseBackUpper
                .Setup(backup => backup.From(It.IsAny<string>()))
@@ -70,7 +76,13 @@ namespace Raven.Assure.Test
                .Setup(backup => backup.WithoutEncryptionKey(It.IsAny<bool>()))
                .Returns(() => mockDatabaseBackUpper.Object);
 
-            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object, Mock.Of<BackUpFileSystem>());
+            var program = new Program(
+               Mock.Of<ConsoleLogger>(), 
+               mockDatabaseBackUpper.Object, 
+               Mock.Of<RestoreDatabase>(), 
+               Mock.Of<BackUpFileSystem>(),
+               Mock.Of<RestoreFileSystem>()
+            );
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() {"out", "test.qa"}));
 
@@ -86,9 +98,7 @@ namespace Raven.Assure.Test
          public void ShouldCallBackupFileSystemOutWithPassedConfigParams()
          {
             var mockLogger = new Mock<ILogger>();
-            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
             var mockFileSystemBackUpper = new Mock<IBackUpFileSystem<BackUpFileSystem>>();
-            var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
             mockFileSystemBackUpper
                .Setup(backup => backup.From(It.IsAny<string>()))
@@ -110,7 +120,13 @@ namespace Raven.Assure.Test
                .Setup(backup => backup.WithoutEncryptionKey(It.IsAny<bool>()))
                .Returns(() => mockFileSystemBackUpper.Object);
 
-            var program = new Program(mockLogger.Object, Mock.Of<BackUpDatabase>(), mockDatabaseRestorer.Object, mockFileSystemBackUpper.Object);
+            var program = new Program(
+               mockLogger.Object, 
+               Mock.Of<BackUpDatabase>(), 
+               Mock.Of<RestoreDatabase>(), 
+               mockFileSystemBackUpper.Object,
+               Mock.Of<RestoreFileSystem>()
+            );
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() {"out", "test.qa.files"}));
 
@@ -125,8 +141,6 @@ namespace Raven.Assure.Test
          [Fact]
          public void ShouldCallRestoreDatabaseInWithPassedConfigParams()
          {
-            var mockLogger = new Mock<ILogger>();
-            var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
             var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
 
             mockDatabaseRestorer
@@ -141,7 +155,13 @@ namespace Raven.Assure.Test
                .Setup(restore => restore.To(It.IsAny<string>()))
                .Returns(() => mockDatabaseRestorer.Object);
 
-            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object, Mock.Of<BackUpFileSystem>());
+            var program = new Program(
+               Mock.Of<ConsoleLogger>(),
+               Mock.Of<BackUpDatabase>(),
+               mockDatabaseRestorer.Object, 
+               Mock.Of<BackUpFileSystem>(),
+               Mock.Of<RestoreFileSystem>()
+            );
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "in", "test.qa" }));
 
@@ -154,7 +174,6 @@ namespace Raven.Assure.Test
          [Fact]
          public void ShouldCallRestoreFileSystemInWithPassedConfigParams()
          {
-            var mockLogger = new Mock<ILogger>();
             var mockFileSystemRestorer = new Mock<IRestoreFileSystem<RestoreFileSystem>>();
 
             mockFileSystemRestorer
@@ -169,7 +188,13 @@ namespace Raven.Assure.Test
                .Setup(restore => restore.To(It.IsAny<string>()))
                .Returns(() => mockFileSystemRestorer.Object);
 
-            var program = new Program(mockLogger.Object, Mock.Of<BackUpDatabase>(), Mock.Of<RestoreDatabase>(), Mock.Of<BackUpFileSystem>());
+            var program = new Program(
+               Mock.Of<ConsoleLogger>(), 
+               Mock.Of<BackUpDatabase>(),
+               Mock.Of<RestoreDatabase>(), 
+               Mock.Of<BackUpFileSystem>(),
+               mockFileSystemRestorer.Object
+            );
 
             program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "in", "test.qa.files" }));
 
@@ -198,10 +223,13 @@ namespace Raven.Assure.Test
                   JsonConfig.Config.Default);
                var args = new List<string>() {"out", _validEnvironment};
 
-               var mockLogger = new Mock<ILogger>();
-               var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-               var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
-               var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object, Mock.Of<BackUpFileSystem>());
+               var program = new Program(
+                  Mock.Of<ConsoleLogger>(),
+                  Mock.Of<BackUpDatabase>(),
+                  Mock.Of<RestoreDatabase>(),
+                  Mock.Of<BackUpFileSystem>(),
+                  Mock.Of<RestoreFileSystem>()
+               );
 
                var actualConfig = program.GetConfigFromArgs(args);
 
@@ -225,10 +253,13 @@ namespace Raven.Assure.Test
 
                var args = new List<string>() {"out", _invalidEnvironment};
 
-               var mockLogger = new Mock<ILogger>();
-               var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
-               var mockDatabaseRestorer = new Mock<IRestoreDatabase<RestoreDatabase>>();
-               var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object, Mock.Of<BackUpFileSystem>());
+               var program = new Program(
+                  Mock.Of<ConsoleLogger>(),
+                  Mock.Of<BackUpDatabase>(),
+                  Mock.Of<RestoreDatabase>(),
+                  Mock.Of<BackUpFileSystem>(),
+                  Mock.Of<RestoreFileSystem>()
+               );
 
                try
                {

@@ -16,6 +16,7 @@ namespace Raven.Assure
       private readonly IBackUpDatabase<BackUpDatabase> databaseBackUpper;
       private readonly IRestoreDatabase<RestoreDatabase> databaseRestorer;
       private readonly IBackUpFileSystem<BackUpFileSystem> fileSystemBackUpper;
+      private readonly IRestoreFileSystem<RestoreFileSystem> fileSystemRestorer;
 
       public static void Main(string[] args)
       {
@@ -26,7 +27,16 @@ namespace Raven.Assure
             .LogWith(logger);
          var fileSystemBackUpper = new BackUpFileSystem()
             .LogWith(logger);
-         var program = new Program(logger, databaseBackUpper, databaseRestorer, fileSystemBackUpper);
+         var fileSystemRestorer = new RestoreFileSystem()
+            .LogWith(logger);
+
+         var program = new Program(
+            logger,
+            databaseBackUpper,
+            databaseRestorer,
+            fileSystemBackUpper,
+            fileSystemRestorer
+         );
          program.ParseCommands(args);
       }
 
@@ -34,13 +44,15 @@ namespace Raven.Assure
          ILogger logger, 
          IBackUpDatabase<BackUpDatabase> databaseBackUpper,
          IRestoreDatabase<RestoreDatabase> databaseRestorer,
-         IBackUpFileSystem<BackUpFileSystem> fileSystemBackUpper
+         IBackUpFileSystem<BackUpFileSystem> fileSystemBackUpper,
+         IRestoreFileSystem<RestoreFileSystem> fileSystemRestorer
         ) 
       {
          this.logger = logger;
          this.databaseBackUpper = databaseBackUpper;
          this.databaseRestorer = databaseRestorer;
          this.fileSystemBackUpper = fileSystemBackUpper;
+         this.fileSystemRestorer = fileSystemRestorer;
       }
 
       public void ParseCommands(IReadOnlyList<string> args)
@@ -128,15 +140,19 @@ namespace Raven.Assure
 
       private void restoreFileSystem(dynamic inEnvironment)
       {
-         throw new NotImplementedException();
+         fileSystemRestorer
+            .To(inEnvironment.In.To.Server.FileSystem)
+            .At(inEnvironment.In.To.Server.Url)
+            .From(inEnvironment.In.From.FilePath)
+            .Run();
       }
 
       private void restoreDatabase(dynamic inEnvironment)
       {
          databaseRestorer
-            .From(inEnvironment.In.From.FilePath)
             .To(inEnvironment.In.To.Server.Database)
             .At(inEnvironment.In.To.Server.Url)
+            .From(inEnvironment.In.From.FilePath)
             .Run();
       }
 
