@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Raven.Abstractions.Data;
-using Raven.Abstractions.Extensions;
-using Raven.Abstractions.FileSystem;
 using Raven.Assure.Fluent;
 using Raven.Assure.Log;
 using Raven.Assure.ResourceDocument;
-using Raven.Client;
-using Raven.Client.Connection;
-using Raven.Client.Document;
 using Raven.Client.FileSystem;
-using Raven.Imports.Newtonsoft.Json;
-using Raven.Json.Linq;
 
 namespace Raven.Assure.BackUp
 {

@@ -1,6 +1,9 @@
-﻿using System.IO.Abstractions;
+﻿using System;
+using System.IO.Abstractions;
+using Raven.Abstractions.Data;
 using Raven.Assure.Fluent;
 using Raven.Assure.Log;
+using Raven.Client.FileSystem;
 
 namespace Raven.Assure.Restore
 {
@@ -38,7 +41,40 @@ namespace Raven.Assure.Restore
 
       public bool Run()
       {
-         throw new System.NotImplementedException();
+         var restoreStartedOn = DateTime.Now;
+
+         logger.Info($@"Running assure in...
+   from {this.BackupLocation}
+   to {this.ServerUrl}/{this.FileSystemName}
+   in {this.RestoreLocation}
+");
+
+         using (var store = new FilesStore()
+         {
+            Url = this.ServerUrl,
+            DefaultFileSystem = this.FileSystemName
+         }.Initialize())
+         {
+            var restoreOperation = store.AsyncFilesCommands.Admin.StartRestore(new FilesystemRestoreRequest() {
+               BackupLocation = this.BackupLocation,
+               FilesystemName = this.FileSystemName,
+               FilesystemLocation = this.RestoreLocation
+            });
+
+            logger.Info("RavenDB provides no status updates on the restore operation...just wait until it completes :-s");
+
+            restoreOperation.Wait();
+         }
+
+         var restoreEndedOn = DateTime.Now;
+
+         var timeToRestore = restoreEndedOn - restoreStartedOn;
+
+         logger.NewLine();
+         logger.Info($"Restore file system from {this.BackupLocation} to {this.FileSystemName} completed!");
+         logger.Info($"Total restore time: {timeToRestore}");
+
+         return true;
       }
 
       public new RestoreFileSystem LogWith(ILogger logger)
