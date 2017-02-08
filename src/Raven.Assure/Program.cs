@@ -116,6 +116,23 @@ namespace Raven.Assure
 
       private void RunRestore(dynamic inEnvironment)
       {
+         if (inEnvironment.IsFileSystem)
+         {
+            restoreFileSystem(inEnvironment);
+         }
+         else
+         {
+            restoreDatabase(inEnvironment);
+         }
+      }
+
+      private void restoreFileSystem(dynamic inEnvironment)
+      {
+         throw new NotImplementedException();
+      }
+
+      private void restoreDatabase(dynamic inEnvironment)
+      {
          databaseRestorer
             .From(inEnvironment.In.From.FilePath)
             .To(inEnvironment.In.To.Server.Database)

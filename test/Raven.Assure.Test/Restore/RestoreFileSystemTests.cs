@@ -67,8 +67,7 @@ namespace Raven.Assure.Test.Restore
 
       public class Run
       {
-         [Fact]
-         //[Fact(Skip = "Manual testing only. Would need to pass store to allow testability.")]
+         [Fact(Skip = "Manual testing only. Would need to pass store to allow testability.")]
          public void ShouldActuallyRestoreMyTestFileSystem()
          {
             new RestoreFileSystem()

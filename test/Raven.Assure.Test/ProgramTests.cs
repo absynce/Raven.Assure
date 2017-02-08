@@ -123,7 +123,7 @@ namespace Raven.Assure.Test
          }
 
          [Fact]
-         public void ShouldCallBackupFileSystemInWithPassedConfigParams()
+         public void ShouldCallRestoreDatabaseInWithPassedConfigParams()
          {
             var mockLogger = new Mock<ILogger>();
             var mockDatabaseBackUpper = new Mock<IBackUpDatabase<BackUpDatabase>>();
@@ -149,6 +149,34 @@ namespace Raven.Assure.Test
             mockDatabaseRestorer.Verify(restorer => restorer.To("TestRestored"));
             mockDatabaseRestorer.Verify(restorer => restorer.At("http://localhost:8080/"));
             mockDatabaseRestorer.Verify(restorer => restorer.Run());
+         }
+
+         [Fact]
+         public void ShouldCallRestoreFileSystemInWithPassedConfigParams()
+         {
+            var mockLogger = new Mock<ILogger>();
+            var mockFileSystemRestorer = new Mock<IRestoreFileSystem<RestoreFileSystem>>();
+
+            mockFileSystemRestorer
+               .Setup(restore => restore.From(It.IsAny<string>()))
+               .Returns(() => mockFileSystemRestorer.Object);
+
+            mockFileSystemRestorer
+               .Setup(restore => restore.At(It.IsAny<string>()))
+               .Returns(() => mockFileSystemRestorer.Object);
+
+            mockFileSystemRestorer
+               .Setup(restore => restore.To(It.IsAny<string>()))
+               .Returns(() => mockFileSystemRestorer.Object);
+
+            var program = new Program(mockLogger.Object, Mock.Of<BackUpDatabase>(), Mock.Of<RestoreDatabase>(), Mock.Of<BackUpFileSystem>());
+
+            program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() { "in", "test.qa.files" }));
+
+            mockFileSystemRestorer.Verify(restorer => restorer.From(@"C:\temp\test.files.raven.incremental.bak"));
+            mockFileSystemRestorer.Verify(restorer => restorer.To("Test.Files.Restored"));
+            mockFileSystemRestorer.Verify(restorer => restorer.At("http://localhost:8080/"));
+            mockFileSystemRestorer.Verify(restorer => restorer.Run());
          }
       }
 
