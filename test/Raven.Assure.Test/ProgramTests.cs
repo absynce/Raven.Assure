@@ -110,13 +110,13 @@ namespace Raven.Assure.Test
                .Setup(backup => backup.WithoutEncryptionKey(It.IsAny<bool>()))
                .Returns(() => mockFileSystemBackUpper.Object);
 
-            var program = new Program(mockLogger.Object, mockDatabaseBackUpper.Object, mockDatabaseRestorer.Object, mockFileSystemBackUpper.Object);
+            var program = new Program(mockLogger.Object, Mock.Of<BackUpDatabase>(), mockDatabaseRestorer.Object, mockFileSystemBackUpper.Object);
 
-            program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() {"out", "test.qa"}));
+            program.ParseCommands(new ReadOnlyCollection<string>(new List<string>() {"out", "test.qa.files"}));
 
-            mockFileSystemBackUpper.Verify(backUpper => backUpper.From("Test"));
+            mockFileSystemBackUpper.Verify(backUpper => backUpper.From("Test.Files"));
             mockFileSystemBackUpper.Verify(backUpper => backUpper.At("http://localhost:8080/"));
-            mockFileSystemBackUpper.Verify(backUpper => backUpper.To("C:\\temp\\test.raven.incremental.bak"));
+            mockFileSystemBackUpper.Verify(backUpper => backUpper.To("C:\\temp\\test.files.raven.incremental.bak"));
             mockFileSystemBackUpper.Verify(backUpper => backUpper.Incrementally(true));
             mockFileSystemBackUpper.Verify(backUpper => backUpper.WithoutEncryptionKey(true));
             mockFileSystemBackUpper.Verify(backUpper => backUpper.Run());

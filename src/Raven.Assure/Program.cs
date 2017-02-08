@@ -77,6 +77,18 @@ namespace Raven.Assure
             logger.Warning("using the default environment Out config (probably not what you want).");
          }
 
+         if (outEnvironment.IsFileSystem)
+         {
+            runFileSystemBackup(outEnvironment);
+         }
+         else
+         {
+            runDatabaseBackup(outEnvironment);
+         }
+      }
+
+      private void runDatabaseBackup(dynamic outEnvironment)
+      {
          databaseBackUpper
             .From(outEnvironment.Out.From.Server.Database)
             .At(outEnvironment.Out.From.Server.Url)
@@ -89,6 +101,17 @@ namespace Raven.Assure
          }
 
          databaseBackUpper.Run();
+      }
+
+      private void runFileSystemBackup(dynamic outEnvironment)
+      {
+         fileSystemBackUpper
+            .From(outEnvironment.Out.From.Server.FileSystem)
+            .At(outEnvironment.Out.From.Server.Url)
+            .To(outEnvironment.Out.To.FilePath)
+            .WithoutEncryptionKey(outEnvironment.Out.RemoveEncryptionKey)
+            .Incrementally(outEnvironment.Out.Incremental)
+            .Run();
       }
 
       private void RunRestore(dynamic inEnvironment)

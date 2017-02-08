@@ -52,12 +52,12 @@ gulp.task('build', function buildRavenAssure(done) {
  * [cross-project content copying](https://github.com/dotnet/cli/issues/753).
  */
 gulp.task('copyConfigs', ['build'], function copyConfigs() {
-   var configPath = path.join('src', 'Raven.Assure', 'bin', 'Debug', 'net46', 'win7-x64', 'config');
-   var configs =  '{default,test.qa}.json';
+   var configPath = path.join('src', 'Raven.Assure', 'bin', env, 'net46', 'win7-x64', 'config');
+   var configs =  '{default,test.qa*}.json';
 
    return gulp.src(path.join(configPath, configs))
       .pipe(gulpDebugger({ title: '  from:' }))
-      .pipe(gulp.dest(path.join('test', 'Raven.Assure.Test', 'bin', 'Debug', 'net46', 'win7-x64', 'config')))
+      .pipe(gulp.dest(path.join('test', 'Raven.Assure.Test', 'bin', env, 'net46', 'win7-x64', 'config')))
       .pipe(gulpDebugger({ title: '  into:' }))
       .on('error', logError);
 });
@@ -70,7 +70,7 @@ gulp.task('copyConfigs', ['build'], function copyConfigs() {
  */
 gulp.task('test', ['copyConfigs'], function testRavenAssure(done) {
    var testProcess = proc
-      .spawn('dotnet', ['test'], {
+      .spawn('dotnet', ['test', '-c', env], {
          cwd: path.join('test', 'Raven.Assure.Test')
       });
 
