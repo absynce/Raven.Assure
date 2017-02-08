@@ -9,6 +9,9 @@ namespace Raven.Assure.Fluent
          return new BackUpDatabase();
       }
 
-      //public static IBackUpFileSystem<BackUpFileSystem> FileSystem() { }
+      public static IBackUpFileSystem<BackUpFileSystem> FileSystem()
+      {
+         return new BackUpFileSystem();
+      }
    }
 }
