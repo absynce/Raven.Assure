@@ -10,7 +10,7 @@ namespace Raven.Assure.Restore
 {
    public class RestoreDatabase : AssureDataBase, IRestoreDatabase<RestoreDatabase>
    {
-      public string DatabaseLocation { get; private set; }
+      public string RestoreLocation { get; private set; }
 
       public IRestoreDatabase<RestoreDatabase> From(string path)
       {
@@ -35,14 +35,9 @@ namespace Raven.Assure.Restore
 
       public IRestoreDatabase<RestoreDatabase> In(string databaseLocation)
       {
-         this.DatabaseLocation = databaseLocation;
+         this.RestoreLocation = databaseLocation;
 
          return this;
-      }
-
-      public Task<bool> RunAsync()
-      {
-         throw new System.NotImplementedException();
       }
 
       public bool Run()
@@ -52,7 +47,7 @@ namespace Raven.Assure.Restore
          logger.Info($@"Running assure in...
    from {this.BackupLocation}
    to {this.ServerUrl}/{this.DatabaseName}
-   in {this.DatabaseLocation}
+   in {this.RestoreLocation}
 ");
 
          using (var store = new DocumentStore()
