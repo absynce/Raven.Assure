@@ -1,0 +1,25 @@
+{
+  "IsFileSystem": true,
+  "Out": {
+    "From": {
+      "Server": {
+        "FileSystem": "Test.Files"
+      }
+    },
+    "To": {
+      "FilePath": "C:\\temp\\test.files.raven.incremental.bak"
+    },
+    "Incremental": true,
+    "RemoveEncryptionKey": true
+  },
+  "In": {
+    "To": {
+      "Server": {
+        "FileSystem": "Test.Files.Restored"
+      }
+    },
+    "From": {
+      "FilePath": "C:\\temp\\test.files.raven.incremental.bak"
+    }
+  }
+}
