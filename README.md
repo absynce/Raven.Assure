@@ -3,9 +3,15 @@ Configurable Raven.Backup CLI and API wrapper for [RavenDB](https://ravendb.net/
 
 Includes CLI tool (assure) with configurable settings and an API wrapper for Raven.Backup (Raven.Assure).
 
+# Install
+
+Download the [latest release assure-[version].zip](https://github.com/absynce/Raven.Assure/releases/latest).
+
+Unzip into directory of your choice.
+
 # Configs
 
-Copy `configs/default.json` and tweak to your liking.
+Copy `configs/default.json` to a new file in `configs/` and tweak to your liking.
 
 #### Backup location
 
