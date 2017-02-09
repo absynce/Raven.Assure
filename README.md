@@ -52,6 +52,24 @@ When this is set to `true`, the encryption key setting (`SecuredSettings["Raven/
 **To-do**
 - [ ] Add option to specify encryption key when restoring
 
+#### Back up or restore a file system
+
+    "IsFileSystem": true,
+    "Out": {
+      "From": {
+        "Server": {
+          "FileSystem": "Your.Files"
+        }
+      }
+    },  
+    "In": {
+      "To": {
+        "Server": {
+          "FileSystem": "Your.Files.Restored"
+        }
+      }
+    }
+
 # CLI (`> assure in/out ...`)
 
     > assure [out|in] [config-name]
