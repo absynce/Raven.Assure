@@ -23,9 +23,9 @@ namespace Raven.Assure.BackUp
       public bool Incremental { get; private set; }
       public bool RemoveEncryptionKey { get; private set; }
 
-      public IBackUpDatabase<BackUpDatabase> From(string fileSystemName)
+      public IBackUpDatabase<BackUpDatabase> From(string databaseName)
       {
-         this.DatabaseName = fileSystemName;
+         this.DatabaseName = databaseName;
 
          return this;
       }
