@@ -1,9 +1,11 @@
 {
+  "IsFileSystem": false,
   "Out": {
     "From": {
       "Server": {
         "Url": "http://localhost:8080/",
         "Database": "",
+        "FileSystem": "",
         "Username": "",
         "Password": "",
         "APIKey": ""
@@ -20,6 +22,7 @@
       "Server": {
         "Url": "http://localhost:8080/",
         "Database": "",
+        "FileSystem": "",
         "Username": "",
         "Password": "",
         "APIKey": ""

@@ -5,7 +5,8 @@
     "copyToOutput": {
       "include": [
         "config\\default.json",
-        "config\\test.qa.json"
+        "config\\test.qa.json",
+        "config\\test.qa.files.json"
       ]
     },
     "embed": {
@@ -28,14 +29,16 @@
     "files": {
       "include": [
         "config\\default.json",
-        "config\\test.qa.json"
+        "config\\test.qa.json",
+        "config\\test.qa.files.json"
       ]
     }
   },
   "publishOptions": {
     "include": [
       "config\\default.json",
-      "config\\test.qa.json"
+      "config\\test.qa.json",
+      "config\\test.qa.files.json"
     ]
   },
   "tooling": {

@@ -1,16 +1,16 @@
-﻿using Raven.Assure.Fluent;
+﻿using Raven.Assure.Restore;
 using Xunit;
 
-namespace Raven.Assure.Test.Fluent
+namespace Raven.Assure.Test.Restore
 {
-   public class RestoreTests
+   public class RestoreFileSystemTests
    {
       public class From
       {
          [Fact]
          public void ShouldSetBackupLocation()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreFileSystem();
 
             const string expectedBackupLocation = "C:\\temp\\good.will";
 
@@ -23,30 +23,30 @@ namespace Raven.Assure.Test.Fluent
       public class To
       {
          [Fact]
-         public void ShouldSetDatabaseName()
+         public void ShouldSetFileSystemName()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreFileSystem();
 
-            const string expectedDatabaseName = "good.will";
+            const string expectedFileSystemName = "good.will";
 
-            var actualRestorer = restorer.To(expectedDatabaseName);
+            var actualRestorer = restorer.To(expectedFileSystemName);
 
-            Assert.Equal(expectedDatabaseName, actualRestorer.DatabaseName);
+            Assert.Equal(expectedFileSystemName, actualRestorer.FileSystemName);
          }
       }
 
       public class In
       {
          [Fact]
-         public void ShouldSetDatabaseLocation()
+         public void ShouldSetRestoreLocation()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreFileSystem();
 
-            const string expectedDatabaseLocation = @"~\Databases\good.will";
+            const string expectedRestoreLocation = @"~\FileSystems\good.will";
 
-            var actualRestorer = restorer.In(expectedDatabaseLocation);
+            var actualRestorer = restorer.In(expectedRestoreLocation);
 
-            Assert.Equal(expectedDatabaseLocation, actualRestorer.DatabaseLocation);
+            Assert.Equal(expectedRestoreLocation, actualRestorer.RestoreLocation);
          }
       }
 
@@ -55,7 +55,7 @@ namespace Raven.Assure.Test.Fluent
          [Fact]
          public void ShouldSetServerUrl()
          {
-            var restorer = new Restore();
+            var restorer = new RestoreFileSystem();
 
             const string expectedServerUrl = "http://good-will-hunting.org/";
 
@@ -68,15 +68,14 @@ namespace Raven.Assure.Test.Fluent
       public class Run
       {
          [Fact(Skip = "Manual testing only. Would need to pass store to allow testability.")]
-         public void ShouldActuallyRestoreMyTestDb()
+         public void ShouldActuallyRestoreMyTestFileSystem()
          {
-            var restorer = new Restore()
-               .From(@"C:\temp\test2.bak")
-               .To("test2")
+            new RestoreFileSystem()
+               .From(@"C:\temp\test.files.raven.incremental.bak")
+               .To("test.files.restored")
                .At("http://localhost:8080")
                //.In(@"C:\RavenDB\Databases\test")
                .Run();
-      
          }
       }
    }
